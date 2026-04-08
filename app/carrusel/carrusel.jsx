@@ -158,7 +158,7 @@ function Carrusel() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[300vh] bg-black flex flex-col items-center"
+      className="relative w-full h-[300vh] bg-black flex flex-col items-center z-30"
     >
       <div className="sticky inset-0 h-screen flex flex-col items-center justify-center">
 
@@ -266,6 +266,7 @@ function Carrusel() {
         </div>
 
       </div>
+    
     </div>
   );
 }

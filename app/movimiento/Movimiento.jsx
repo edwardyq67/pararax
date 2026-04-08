@@ -5,8 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import CanvasWrapper from "../Canvas";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -99,7 +98,7 @@ const StatisticsSection = ({ isVisible }) => {
 
 /* ---------------- PLANETA CON SCROLL ---------------- */
 
-function Planet({ scrollProgress }) {
+function Planet() {
   const groupRef = useRef();
   const dragging = useRef(false);
   const previousMouse = useRef([0, 0]);
@@ -147,20 +146,11 @@ function Planet({ scrollProgress }) {
   useFrame(() => {
     shaderMaterial.uniforms.time.value += 0.01;
 
-    if (groupRef.current) {
-      // Movimiento lateral con scroll: de centro (x=0) hacia izquierda (x=-3)
-      groupRef.current.position.x = THREE.MathUtils.lerp(
-        groupRef.current.position.x,
-        scrollProgress.current * -3,
-        0.05
-      );
-
-      if (!dragging.current) {
-        groupRef.current.rotation.y += velocity.current.x + 0.001;
-        groupRef.current.rotation.x += velocity.current.y;
-        velocity.current.x *= 0.92;
-        velocity.current.y *= 0.92;
-      }
+    if (groupRef.current && !dragging.current) {
+      groupRef.current.rotation.y += velocity.current.x + 0.001;
+      groupRef.current.rotation.x += velocity.current.y;
+      velocity.current.x *= 0.92;
+      velocity.current.y *= 0.92;
     }
   });
 
@@ -242,7 +232,7 @@ function StarsBackground() {
 
 function Movimiento() {
   const containerRef = useRef(null);
-  const scrollProgress = useRef(0); // 0 = inicio, 1 = final del scroll
+  const planetContainerRef = useRef(null);
   const section1Ref = useRef(null);
   const section2Ref = useRef(null);
 
@@ -269,15 +259,22 @@ function Movimiento() {
     return () => observer.disconnect();
   }, []);
 
-  /* Leer el scroll y guardar progreso en un ref (sin re-render) */
+  /* Animación del planeta con scroll - CORREGIDO */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          scrollProgress.current = self.progress;
+      // Calculamos el scroll total disponible
+      const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
+      
+      // Animamos el contenedor del planeta
+      gsap.to(planetContainerRef.current, {
+        x: window.innerWidth * -0.25, // Movimiento lateral durante el scroll
+        y: totalScroll * 0.5, // Movimiento vertical más sutil
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5, // Suavizado del scrub
+          invalidateOnRefresh: true,
         },
       });
     }, containerRef);
@@ -288,25 +285,29 @@ function Movimiento() {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[210dvh] bg-black overflow-hidden"
+      className="relative min-h-[210dvh] bg-black overflow-x-hidden"
     >
 
-      {/* ESTRELLAS */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* ESTRELLAS - Fondo fijo */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
           <StarsBackground />
         </Canvas>
       </div>
 
-      {/* PLANETA fullscreen, se mueve internamente con scroll */}
-      <div className="fixed inset-0 w-screen h-screen z-10 pointer-events-none">
+      {/* PLANETA - Ahora se mueve con scroll, no fixed */}
+      <div 
+        ref={planetContainerRef}
+        className="absolute top-0 left-0 w-screen h-screen z-0 pointer-events-auto"
+        style={{ willChange: "transform" }}
+      >
         <Canvas
           camera={{ position: [0, 0, 6], fov: 60 }}
-          style={{ pointerEvents: "auto" }}
+          style={{ width: "100%", height: "100%" }}
         >
           <ambientLight intensity={1.2} />
           <directionalLight position={[3, 3, 3]} intensity={2} />
-          <Planet scrollProgress={scrollProgress} />
+          <Planet />
         </Canvas>
       </div>
 

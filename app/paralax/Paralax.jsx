@@ -80,7 +80,7 @@ function Paralax({ setVideoListo }) {
   return (
     <section className="relative w-full">
       {/* 🎥 VIDEO - Siempre visible, sin loader interno */}
-      <div className="fixed top-0 left-0 w-full h-screen overflow-hidden -z-10 bg-black">
+      <div className="relative top-0 left-0 w-full h-screen overflow-hidden -z-10 bg-black">
         <video
           ref={videoRef}
           src="/SmartFrostWeb-Video1_lg.mp4"
