@@ -17,7 +17,6 @@ const Counter = ({ targetValue, label, suffix = "", isVisible }) => {
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef(null);
   
-  // Reiniciar el contador cuando la sección se vuelve visible
   useEffect(() => {
     if (isVisible) {
       setHasAnimated(false);
@@ -28,8 +27,8 @@ const Counter = ({ targetValue, label, suffix = "", isVisible }) => {
   useEffect(() => {
     if (isVisible && !hasAnimated) {
       let start = 0;
-      const duration = 2000; // 2 segundos
-      const stepTime = 16; // ~60fps
+      const duration = 2000;
+      const stepTime = 16;
       const steps = duration / stepTime;
       const increment = targetValue / steps;
       
@@ -61,7 +60,7 @@ const Counter = ({ targetValue, label, suffix = "", isVisible }) => {
   );
 };
 
-/* ---------------- ESTADÍSTICAS MEJORADAS ---------------- */
+/* ---------------- ESTADÍSTICAS ---------------- */
 
 const StatisticsSection = ({ isVisible }) => {
   const stats = [
@@ -80,17 +79,15 @@ const StatisticsSection = ({ isVisible }) => {
           transition={{ duration: 0.6, delay: 0.8 + i * 0.15 }}
           className="relative"
         >
-          {/* Línea decorativa superior */}
           <motion.div
             initial={{ width: 0 }}
             animate={isVisible ? { width: "100%" } : { width: 0 }}
             transition={{ duration: 0.8, delay: 1 + i * 0.15 }}
             className="absolute -top-4 left-0 h-px bg-gradient-to-r from-primary-500/0 via-primary-500 to-primary-500/0"
           />
-          
-          <Counter 
-            targetValue={stat.value} 
-            label={stat.label} 
+          <Counter
+            targetValue={stat.value}
+            label={stat.label}
             suffix={stat.suffix}
             isVisible={isVisible}
           />
@@ -100,9 +97,9 @@ const StatisticsSection = ({ isVisible }) => {
   );
 };
 
-/* ---------------- PLANETA ---------------- */
+/* ---------------- PLANETA CON SCROLL ---------------- */
 
-function Planet() {
+function Planet({ scrollProgress }) {
   const groupRef = useRef();
   const dragging = useRef(false);
   const previousMouse = useRef([0, 0]);
@@ -134,7 +131,6 @@ function Planet() {
         uniform vec3 color;
         uniform float time;
         varying vec2 vUv;
-
         void main(){
           vec4 texColor = texture2D(baseTexture,vUv);
           float scanline = sin(vUv.y * 50.0 - time * 5.0) * 0.15;
@@ -151,12 +147,20 @@ function Planet() {
   useFrame(() => {
     shaderMaterial.uniforms.time.value += 0.01;
 
-    if (groupRef.current && !dragging.current) {
-      groupRef.current.rotation.y += velocity.current.x + 0.001;
-      groupRef.current.rotation.x += velocity.current.y;
+    if (groupRef.current) {
+      // Movimiento lateral con scroll: de centro (x=0) hacia izquierda (x=-3)
+      groupRef.current.position.x = THREE.MathUtils.lerp(
+        groupRef.current.position.x,
+        scrollProgress.current * -3,
+        0.05
+      );
 
-      velocity.current.x *= 0.92;
-      velocity.current.y *= 0.92;
+      if (!dragging.current) {
+        groupRef.current.rotation.y += velocity.current.x + 0.001;
+        groupRef.current.rotation.x += velocity.current.y;
+        velocity.current.x *= 0.92;
+        velocity.current.y *= 0.92;
+      }
     }
   });
 
@@ -165,24 +169,17 @@ function Planet() {
     previousMouse.current = [e.clientX, e.clientY];
   };
 
-  const onPointerUp = () => {
-    dragging.current = false;
-  };
+  const onPointerUp = () => { dragging.current = false; };
 
   const onPointerMove = (e) => {
     if (!dragging.current || !groupRef.current) return;
-
     const deltaX = e.clientX - previousMouse.current[0];
     const deltaY = e.clientY - previousMouse.current[1];
-
     const speed = 0.005;
-
     groupRef.current.rotation.y += deltaX * speed;
     groupRef.current.rotation.x += deltaY * speed;
-
     velocity.current.x = deltaX * speed;
     velocity.current.y = deltaY * speed;
-
     previousMouse.current = [e.clientX, e.clientY];
   };
 
@@ -197,7 +194,6 @@ function Planet() {
       <mesh material={shaderMaterial}>
         <sphereGeometry args={[2, 64, 64]} />
       </mesh>
-
       <mesh scale={1.015}>
         <sphereGeometry args={[2, 64, 64]} />
         <meshBasicMaterial
@@ -219,13 +215,11 @@ function StarsBackground() {
 
   const positions = useMemo(() => {
     const pos = new Float32Array(starsCount * 3);
-
     for (let i = 0; i < starsCount; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 400;
+      pos[i * 3]     = (Math.random() - 0.5) * 400;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 400;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 400;
     }
-
     return pos;
   }, []);
 
@@ -239,7 +233,6 @@ function StarsBackground() {
           itemSize={3}
         />
       </bufferGeometry>
-
       <pointsMaterial color="white" size={0.2} transparent opacity={0.7} />
     </points>
   );
@@ -249,8 +242,7 @@ function StarsBackground() {
 
 function Movimiento() {
   const containerRef = useRef(null);
-  const boxRef = useRef(null);
-
+  const scrollProgress = useRef(0); // 0 = inicio, 1 = final del scroll
   const section1Ref = useRef(null);
   const section2Ref = useRef(null);
 
@@ -259,50 +251,33 @@ function Movimiento() {
     section2: false,
   });
 
-  /* Intersection Observer con threshold más bajo para detección temprana */
+  /* Intersection Observer */
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.target === section1Ref.current) {
-            setIsVisible((prev) => ({
-              ...prev,
-              section1: entry.isIntersecting,
-            }));
-          }
-
-          if (entry.target === section2Ref.current) {
-            setIsVisible((prev) => ({
-              ...prev,
-              section2: entry.isIntersecting,
-            }));
-          }
+          if (entry.target === section1Ref.current)
+            setIsVisible((prev) => ({ ...prev, section1: entry.isIntersecting }));
+          if (entry.target === section2Ref.current)
+            setIsVisible((prev) => ({ ...prev, section2: entry.isIntersecting }));
         });
       },
-      { threshold: 0.2 } // Cambiado de 0.3 a 0.2 para detección más temprana
+      { threshold: 0.2 }
     );
-
     if (section1Ref.current) observer.observe(section1Ref.current);
     if (section2Ref.current) observer.observe(section2Ref.current);
-
     return () => observer.disconnect();
   }, []);
 
-  /* GSAP scroll planeta */
-
+  /* Leer el scroll y guardar progreso en un ref (sin re-render) */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const totalScroll =
-        containerRef.current.offsetHeight - window.innerHeight;
-
-      gsap.to(boxRef.current, {
-        x: window.innerWidth * -0.25,
-        y: totalScroll ,
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          scrollProgress.current = self.progress;
         },
       });
     }, containerRef);
@@ -316,7 +291,6 @@ function Movimiento() {
       className="relative min-h-[210dvh] bg-black overflow-hidden"
     >
 
-
       {/* ESTRELLAS */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
@@ -324,19 +298,19 @@ function Movimiento() {
         </Canvas>
       </div>
 
-      {/* PLANETA */}
-      <div
-        ref={boxRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] z-30"
-      >
-        <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
+      {/* PLANETA fullscreen, se mueve internamente con scroll */}
+      <div className="fixed inset-0 w-screen h-screen z-10 pointer-events-none">
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 60 }}
+          style={{ pointerEvents: "auto" }}
+        >
           <ambientLight intensity={1.2} />
           <directionalLight position={[3, 3, 3]} intensity={2} />
-          <Planet />
+          <Planet scrollProgress={scrollProgress} />
         </Canvas>
       </div>
 
-      {/* SECCIÓN 1 CON MOTION */}
+      {/* SECCIÓN 1 */}
       <motion.div
         ref={section1Ref}
         initial={{ opacity: 0, y: 100 }}
@@ -346,9 +320,9 @@ function Movimiento() {
           ease: "easeOut",
           type: "spring",
           stiffness: 100,
-          damping: 20
+          damping: 20,
         }}
-        className="h-[100dvh] flex items-center justify-center relative z-40 px-4 sm:px-6"
+        className="h-[100dvh] flex items-center justify-center relative z-50 px-4 sm:px-6"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -362,7 +336,7 @@ function Movimiento() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full mx-auto mb-8"
           />
-          
+
           <motion.h3
             initial={{ opacity: 0, y: 30 }}
             animate={isVisible.section1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -371,7 +345,7 @@ function Movimiento() {
           >
             Diseño + Tecnología
           </motion.h3>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={isVisible.section1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -388,7 +362,7 @@ function Movimiento() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="mt-8 flex justify-center gap-4"
           >
-            {['Innovación', 'Resultados'].map((tag, i) => (
+            {["Innovación", "Resultados"].map((tag, i) => (
               <span
                 key={i}
                 className="px-4 py-2 bg-white/10 rounded-full text-sm text-white/80 border border-white/20"
@@ -400,7 +374,7 @@ function Movimiento() {
         </motion.div>
       </motion.div>
 
-      {/* SECCIÓN 2 CON ESTADÍSTICAS MEJORADAS */}
+      {/* SECCIÓN 2 */}
       <motion.div
         ref={section2Ref}
         initial={{ opacity: 0, x: -50 }}
@@ -410,9 +384,9 @@ function Movimiento() {
           ease: "easeOut",
           type: "spring",
           stiffness: 100,
-          damping: 20
+          damping: 20,
         }}
-        className="h-[100dvh] flex items-end relative z-20 px-6 md:px-20 text-white pb-20"
+        className="h-[100dvh] flex items-end relative px-6 md:px-20 text-white pb-20"
       >
         <div className="grid md:grid-cols-2 gap-16 w-full max-w-7xl mx-auto">
           <motion.div
@@ -421,7 +395,7 @@ function Movimiento() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="hidden md:block"
           >
-            <div className="relative"></div>
+            <div className="relative" />
           </motion.div>
 
           <motion.div
@@ -436,7 +410,7 @@ function Movimiento() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="h-px bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full"
             />
-            
+
             <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight">
               Potencia tu{" "}
               <span className="bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent">
@@ -463,11 +437,15 @@ function Movimiento() {
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </motion.svg>
             </motion.button>
 
-            {/* ESTADÍSTICAS MINIMALISTAS Y GRANDES */}
             <StatisticsSection isVisible={isVisible.section2} />
           </motion.div>
         </div>
