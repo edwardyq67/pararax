@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+.font-saira-stencil {
+  font-family: 'Saira Stencil One', cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  /* Variables HSL para colores */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --muted: 220 14.3% 95.9%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91 %;
+
+  /* 🔥 Paleta basada en #43C4F5 - Azul/Cyan brillante */
+  --primary-50: 197 100% 96%;
+  --primary-100: 197 100% 90%;
+  --primary-200: 197 95% 80%;
+  --primary-300: 197 90% 70%;
+  --primary-400: 197 85% 60%;
+  --primary-500: 197 80% 55%; /* 🔥 #43C4F5 base */
+  --primary-600: 197 75% 45%;
+  --primary-700: 197 70% 35%;
+  --primary-800: 197 65% 25%;
+  --primary-900: 197 60% 18%;
+  --primary-950: 197 60% 10%;
+
+  --primary: 186 56% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214.3 31.8% 91.4%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 214.3 31.8% 91.4%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 85.7% 97.3%;
+  --ring: 186 56% 45%;
+  --success: 142.1 70.6% 45.3%;
+  --success-foreground: 138.5 76.5% 96.7%;
+  --warning: 24.6 95% 53.1%;
+  --warning-foreground: 33.3 100% 96.5%;
+  --info: 188.7 94.5% 42.7%;
+  --info-foreground: 183.2 100% 96.3%;
+
+  /* Default scale */
+  --default-50: 186 56% 95%;
+  --default-100: 186 56% 85%;
+  --default-200: 186 56% 75%;
+  --default-300: 186 56% 65%;
+  --default-400: 186 56% 55%;
+  --default-500: 186 56% 45%;
+  --default-600: 186 56% 35%;
+  --default-700: 186 56% 28%;
+  --default-800: 186 56% 22%;
+  --default-900: 186 56% 16%;
+  --default-950: 186 56% 10%;
+
+  --radius: 0.5rem;
+}
+
+/* Configuración del tema con @theme */
+@theme {
+  /* Container */
+  --container-padding: 15px;
+  --container-padding-sm: 15px;
+  --container-padding-lg: 15px;
+  --container-padding-xl: 0;
+  --container-padding-2xl: 0;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1392px;
+
+  /* Colores usando las variables HSL */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* Background & Foreground */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  /* Card */
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  /* Popover */
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  /* Primary colors */
+  --color-primary: hsl(var(--primary));
+  --color-primary-50: hsl(var(--primary-50));
+  --color-primary-100: hsl(var(--primary-100));
+  --color-primary-200: hsl(var(--primary-200));
+  --color-primary-300: hsl(var(--primary-300));
+  --color-primary-400: hsl(var(--primary-400));
+  --color-primary-500: hsl(var(--primary-500));
+  --color-primary-600: hsl(var(--primary-600));
+  --color-primary-700: hsl(var(--primary-700));
+  --color-primary-800: hsl(var(--primary-800));
+  --color-primary-900: hsl(var(--primary-900));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  /* Secondary */
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  /* Accent */
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  /* Muted */
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  /* Destructive */
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  /* Success */
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  /* Warning */
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+
+  /* Info */
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+
+  /* Default scale */
+  --color-default-50: hsl(var(--default-50));
+  --color-default-100: hsl(var(--default-100));
+  --color-default-200: hsl(var(--default-200));
+  --color-default-300: hsl(var(--default-300));
+  --color-default-400: hsl(var(--default-400));
+  --color-default-500: hsl(var(--default-500));
+  --color-default-600: hsl(var(--default-600));
+  --color-default-700: hsl(var(--default-700));
+  --color-default-800: hsl(var(--default-800));
+  --color-default-900: hsl(var(--default-900));
+  --color-default-950: hsl(var(--default-950));
+
+  /* Border radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* Efecto metálico */
+.metallic-effect {
+  background: linear-gradient(135deg,
+      hsl(186, 56%, 45%) 0%,
+      hsl(186, 56%, 40%) 25%,
+      hsl(186, 56%, 35%) 50%,
+      hsl(186, 56%, 30%) 75%,
+      hsl(186, 56%, 25%) 100%);
+  background-size: 200% 200%;
+  animation: metallic-shine 3s ease infinite;
+}
+
+@keyframes metallic-shine {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Utilidades adicionales */
+.bg-primary-50 {
+  background-color: hsl(var(--primary-50));
+}
+
+.bg-primary-100 {
+  background-color: hsl(var(--primary-100));
+}
+
+/* Agrega más utilidades según necesites */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* GRID NORMAL */
+.gallery {
+  display: grid;
+  gap: 1vh;
+  grid-template-columns: repeat(3, 32.5vw);
+  grid-template-rows: repeat(4, 23vh);
+  justify-content: center;
+  align-content: center;
+}
+
+/* GRID FINAL (para animación) */
+.gallery--final {
+  grid-template-columns: repeat(3, 100vw) !important;
+  grid-template-rows: repeat(4, 49.5vh) !important;
+}
+
+/* POSICIONES (CLAVE para FLIP) */
+.gallery__item:nth-child(1) {
+  grid-area: 1 / 1 / 3 / 2;
+}
+
+.gallery__item:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+.gallery__item:nth-child(3) {
+  grid-area: 2 / 2 / 4 / 3;
+}
+
+.gallery__item:nth-child(4) {
+  grid-area: 1 / 3 / 3 / 3;
+}
+
+.gallery__item:nth-child(5) {
+  grid-area: 3 / 1 / 3 / 2;
+}
+
+.gallery__item:nth-child(6) {
+  grid-area: 3 / 3 / 5 / 4;
+}
+
+.gallery__item:nth-child(7) {
+  grid-area: 4 / 1 / 5 / 2;
+}
+
+.gallery__item:nth-child(8) {
+  grid-area: 4 / 2 / 5 / 3;
+}
