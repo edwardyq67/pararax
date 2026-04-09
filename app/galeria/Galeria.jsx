@@ -14,7 +14,7 @@ function Galeria() {
     const nextVideoRef = useRef(null);
     const preloadTimeoutRef = useRef(null);
     const checkIntervalRef = useRef(null);
-    const observerRef = useRef(null); // Para IntersectionObserver
+    const observerRef = useRef(null);
 
     const [data, setData] = useState([]);
     const [fotoVideo, setFotoVideo] = useState([]);
@@ -22,7 +22,7 @@ function Galeria() {
     const [loading, setLoading] = useState(true);
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
     const [currentSubIndex, setCurrentSubIndex] = useState({});
-    const [isVideoVisible, setIsVideoVisible] = useState(false);
+    const [isVideoVisible, setIsVideoVisible] = useState(true); // ✅ Cambiado a true por defecto
 
     // 🔥 FETCH DATA
     useEffect(() => {
@@ -72,13 +72,12 @@ function Galeria() {
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        // Video visible - reproducir si ya se activó
                         setIsVideoVisible(true);
+                        // Reanudar video si estaba pausado y ya se había reproducido
                         if (videoPlayed && videoElement.paused) {
                             videoElement.play().catch(e => console.log("Error resuming video:", e));
                         }
                     } else {
-                        // Video no visible - pausar
                         setIsVideoVisible(false);
                         if (!videoElement.paused) {
                             videoElement.pause();
@@ -87,7 +86,7 @@ function Galeria() {
                 });
             },
             {
-                threshold: 0.3, // 30% visible para activar
+                threshold: 0.1, // ✅ Cambiado a 10% para que se active más rápido
                 rootMargin: "0px"
             }
         );
@@ -140,15 +139,12 @@ function Galeria() {
         const currentItem = videoItems[currentVideoIndex];
         const currentLength = getVideoLength(currentItem);
         
-        // Si el video actual tiene más videos en el array
         if (currentLength > 1) {
             const nextSubIndex = ((currentSubIndex[2] || 0) + 1) % currentLength;
             const nextVideoUrl = getVideoUrl(currentItem, nextSubIndex);
             
             if (nextVideoUrl) {
                 setCurrentSubIndex(prev => ({ ...prev, [2]: nextSubIndex }));
-                
-                // Cambio instantáneo
                 videoElement.src = nextVideoUrl;
                 videoElement.load();
                 if (isVideoVisible) {
@@ -158,11 +154,9 @@ function Galeria() {
             }
         }
         
-        // Pasar al siguiente ítem
         const nextIndex = (currentVideoIndex + 1) % videoItems.length;
         
         if (nextVideoRef.current?.src) {
-            // Intercambio instantáneo
             const tempSrc = nextVideoRef.current.src;
             nextVideoRef.current.src = videoElement.src;
             videoElement.src = tempSrc;
@@ -207,10 +201,10 @@ function Galeria() {
         }, 50);
     }, [playNextVideo, isVideoVisible]);
 
-    // Manejadores de video
+    // ✅ Manejadores de video - SIN depender de isVideoVisible para iniciar
     const handleMouseEnter = useCallback(() => {
         const videoElement = videoRefs.current[2];
-        if (videoElement && videoItems.length > 0 && !videoPlayed && isVideoVisible) {
+        if (videoElement && videoItems.length > 0 && !videoPlayed) {
             const currentItem = videoItems[currentVideoIndex];
             const currentVideoUrl = getVideoUrl(currentItem, currentSubIndex[2] || 0);
             
@@ -227,7 +221,7 @@ function Galeria() {
                 })
                 .catch(e => console.log("Error playing video:", e));
         }
-    }, [videoItems, videoPlayed, currentVideoIndex, currentSubIndex, preloadNextVideo, getVideoUrl, setupVideoProgressCheck, isVideoVisible]);
+    }, [videoItems, videoPlayed, currentVideoIndex, currentSubIndex, preloadNextVideo, getVideoUrl, setupVideoProgressCheck]);
 
     // Evento 'ended' como respaldo
     useEffect(() => {
