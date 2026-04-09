@@ -22,7 +22,7 @@ function Galeria() {
     const [loading, setLoading] = useState(true);
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
     const [currentSubIndex, setCurrentSubIndex] = useState({});
-    const [isVideoVisible, setIsVideoVisible] = useState(true); // ✅ Cambiado a true por defecto
+    const [isVideoActive, setIsVideoActive] = useState(false);
 
     // 🔥 FETCH DATA
     useEffect(() => {
@@ -63,7 +63,7 @@ function Galeria() {
     
     const hasVideos = videoItems.length > 0;
 
-    // 🔥 IntersectionObserver para detectar visibilidad del video
+    // 🔥 IntersectionObserver - SOLO para pausar si no es visible (ahorro de recursos)
     useEffect(() => {
         const videoElement = videoRefs.current[2];
         if (!videoElement) return;
@@ -71,22 +71,19 @@ function Galeria() {
         observerRef.current = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setIsVideoVisible(true);
-                        // Reanudar video si estaba pausado y ya se había reproducido
-                        if (videoPlayed && videoElement.paused) {
-                            videoElement.play().catch(e => console.log("Error resuming video:", e));
-                        }
-                    } else {
-                        setIsVideoVisible(false);
+                    if (!entry.isIntersecting && isVideoActive) {
+                        // Video no visible - pausar para ahorrar recursos
                         if (!videoElement.paused) {
                             videoElement.pause();
                         }
+                    } else if (entry.isIntersecting && isVideoActive && videoElement.paused) {
+                        // Video visible nuevamente - reanudar
+                        videoElement.play().catch(e => console.log("Error resuming:", e));
                     }
                 });
             },
             {
-                threshold: 0.1, // ✅ Cambiado a 10% para que se active más rápido
+                threshold: 0.1,
                 rootMargin: "0px"
             }
         );
@@ -98,7 +95,7 @@ function Galeria() {
                 observerRef.current.disconnect();
             }
         };
-    }, [videoPlayed]);
+    }, [isVideoActive]);
 
     // Precargar siguiente video
     const preloadNextVideo = useCallback((currentIndex, currentSubIdx = 0) => {
@@ -129,9 +126,9 @@ function Galeria() {
         }, 100);
     }, [videoItems, getVideoUrl]);
 
-    // Reproducir siguiente video instantáneamente
+    // Reproducir siguiente video
     const playNextVideo = useCallback(() => {
-        if (videoItems.length === 0) return;
+        if (videoItems.length === 0 || !isVideoActive) return;
         
         const videoElement = videoRefs.current[2];
         if (!videoElement) return;
@@ -147,7 +144,7 @@ function Galeria() {
                 setCurrentSubIndex(prev => ({ ...prev, [2]: nextSubIndex }));
                 videoElement.src = nextVideoUrl;
                 videoElement.load();
-                if (isVideoVisible) {
+                if (isVideoActive) {
                     videoElement.play().catch(e => console.log("Error:", e));
                 }
                 return;
@@ -160,7 +157,7 @@ function Galeria() {
             const tempSrc = nextVideoRef.current.src;
             nextVideoRef.current.src = videoElement.src;
             videoElement.src = tempSrc;
-            if (isVideoVisible) {
+            if (isVideoActive) {
                 videoElement.play().catch(e => console.log("Error:", e));
             }
             setCurrentVideoIndex(nextIndex);
@@ -174,13 +171,13 @@ function Galeria() {
                 setCurrentSubIndex(prev => ({ ...prev, [2]: 0 }));
                 videoElement.src = nextVideoUrl;
                 videoElement.load();
-                if (isVideoVisible) {
+                if (isVideoActive) {
                     videoElement.play().catch(e => console.log("Error:", e));
                 }
                 preloadNextVideo(nextIndex, 0);
             }
         }
-    }, [currentVideoIndex, currentSubIndex, videoItems, preloadNextVideo, getVideoUrl, getVideoLength, isVideoVisible]);
+    }, [currentVideoIndex, currentSubIndex, videoItems, preloadNextVideo, getVideoUrl, getVideoLength, isVideoActive]);
 
     // Detectar cuando el video está por terminar
     const setupVideoProgressCheck = useCallback((videoElement) => {
@@ -191,7 +188,7 @@ function Galeria() {
         }
         
         checkIntervalRef.current = setInterval(() => {
-            if (videoElement && videoElement.duration && !videoElement.paused && isVideoVisible) {
+            if (videoElement && videoElement.duration && !videoElement.paused && isVideoActive) {
                 if (videoElement.duration - videoElement.currentTime < 0.1) {
                     clearInterval(checkIntervalRef.current);
                     checkIntervalRef.current = null;
@@ -199,12 +196,14 @@ function Galeria() {
                 }
             }
         }, 50);
-    }, [playNextVideo, isVideoVisible]);
+    }, [playNextVideo, isVideoActive]);
 
-    // ✅ Manejadores de video - SIN depender de isVideoVisible para iniciar
+    // ✅ Manejador de hover - Activa el video y NUNCA lo detiene por mouse leave
     const handleMouseEnter = useCallback(() => {
         const videoElement = videoRefs.current[2];
-        if (videoElement && videoItems.length > 0 && !videoPlayed) {
+        if (videoElement && videoItems.length > 0 && !isVideoActive) {
+            setIsVideoActive(true);
+            
             const currentItem = videoItems[currentVideoIndex];
             const currentVideoUrl = getVideoUrl(currentItem, currentSubIndex[2] || 0);
             
@@ -213,6 +212,7 @@ function Galeria() {
                 videoElement.load();
             }
             videoElement.style.opacity = "1";
+            videoElement.currentTime = 0;
             videoElement.play()
                 .then(() => {
                     setVideoPlayed(true);
@@ -221,7 +221,10 @@ function Galeria() {
                 })
                 .catch(e => console.log("Error playing video:", e));
         }
-    }, [videoItems, videoPlayed, currentVideoIndex, currentSubIndex, preloadNextVideo, getVideoUrl, setupVideoProgressCheck]);
+    }, [videoItems, isVideoActive, currentVideoIndex, currentSubIndex, preloadNextVideo, getVideoUrl, setupVideoProgressCheck]);
+
+    // ❌ NO hay handleMouseLeave - El video NUNCA se detiene por salida del mouse
+    // Solo se detiene si no es visible (IntersectionObserver) o si cambias de pestaña
 
     // Evento 'ended' como respaldo
     useEffect(() => {
@@ -400,6 +403,7 @@ function Galeria() {
                                 className="gallery__item relative w-full h-full overflow-hidden group cursor-pointer"
                                 style={{ gridArea: gridAreas[i] }}
                                 onMouseEnter={() => i === 2 && handleMouseEnter()}
+                                // ❌ SIN onMouseLeave - el video NUNCA se detiene por salida del mouse
                             >
                                 <img
                                     src={item.foto}
@@ -414,9 +418,7 @@ function Galeria() {
                                         ref={(el) => {
                                             if (el) videoRefs.current[i] = el;
                                         }}
-                                        className={`absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none ${
-                                            videoPlayed ? 'opacity-100' : 'opacity-0'
-                                        }`}
+                                        className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none opacity-0"
                                         loop={false}
                                         muted
                                         playsInline
@@ -425,9 +427,7 @@ function Galeria() {
                                 )}
 
                                 {i === 2 && hasVideo && (
-                                    <div className={`absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 z-10 transition-opacity duration-300 ${
-                                        videoPlayed ? 'opacity-100' : 'opacity-70'
-                                    }`}>
+                                    <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 z-10 opacity-70">
                                         <svg
                                             className="w-4 h-4 text-white"
                                             fill="currentColor"
@@ -442,6 +442,7 @@ function Galeria() {
                     })}
                 </div>
 
+                {/* 🔥 CONTENIDO - SIN eventos de hover */}
                 <div
                     ref={contentRef}
                     className="
@@ -450,6 +451,7 @@ function Galeria() {
                         px-4 md:px-10 py-10 md:py-20
                         translate-y-full
                         overflow-y-auto
+                        pointer-events-auto
                     "
                 >
                     <h2 className="text-4xl md:text-5xl font-bold mb-40 text-center text-white">
