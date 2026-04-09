@@ -5,8 +5,10 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 function Paralax({ setVideoListo }) {
   const videoRef = useRef(null);
   const textRef = useRef(null);
+  const observerRef = useRef(null);
   
   const [isPageVisible, setIsPageVisible] = useState(true);
+  const [isVideoVisible, setIsVideoVisible] = useState(true);
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -21,6 +23,44 @@ function Paralax({ setVideoListo }) {
     "Monitoreo inteligente 24/7",
     "Eficiencia energética garantizada",
   ];
+
+  // 🔥 IntersectionObserver para detectar cuando el video es visible
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement || isLoading) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Video visible - reproducir si estaba pausado
+            setIsVideoVisible(true);
+            if (videoElement.paused && isPageVisible) {
+              videoElement.play().catch(e => console.log("Error resuming video:", e));
+            }
+          } else {
+            // Video no visible - pausar
+            setIsVideoVisible(false);
+            if (!videoElement.paused) {
+              videoElement.pause();
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.1, // 10% visible para activar
+        rootMargin: "0px"
+      }
+    );
+
+    observerRef.current.observe(videoElement);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [isLoading, isPageVisible]);
 
   // Cambio de texto simple
   const changeText = useCallback((newText) => {
@@ -99,7 +139,9 @@ function Paralax({ setVideoListo }) {
       const tempSrc = nextVideoRef.current.src;
       nextVideoRef.current.src = videoRef.current.src;
       videoRef.current.src = tempSrc;
-      videoRef.current.play().catch(e => console.log("Error playing:", e));
+      if (isVideoVisible && isPageVisible) {
+        videoRef.current.play().catch(e => console.log("Error playing:", e));
+      }
       setCurrentVideoIndex(nextIndex);
       preloadNextVideo(nextIndex);
     } else {
@@ -107,11 +149,13 @@ function Paralax({ setVideoListo }) {
       if (videoRef.current) {
         videoRef.current.src = videos[nextIndex].video;
         videoRef.current.load();
-        videoRef.current.play().catch(e => console.log("Error playing:", e));
+        if (isVideoVisible && isPageVisible) {
+          videoRef.current.play().catch(e => console.log("Error playing:", e));
+        }
       }
       preloadNextVideo(nextIndex);
     }
-  }, [currentVideoIndex, videos, preloadNextVideo]);
+  }, [currentVideoIndex, videos, preloadNextVideo, isVideoVisible, isPageVisible]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -133,14 +177,16 @@ function Paralax({ setVideoListo }) {
       const isVisible = !document.hidden;
       setIsPageVisible(isVisible);
       if (videoRef.current) {
-        isVisible
-          ? videoRef.current.play().catch(() => {})
-          : videoRef.current.pause();
+        if (isVisible && isVideoVisible) {
+          videoRef.current.play().catch(() => {});
+        } else if (!isVisible) {
+          videoRef.current.pause();
+        }
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
+  }, [isVideoVisible]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -159,6 +205,7 @@ function Paralax({ setVideoListo }) {
     return () => {
       if (nextVideoRef.current) { nextVideoRef.current.src = ''; nextVideoRef.current = null; }
       if (preloadTimeoutRef.current) clearTimeout(preloadTimeoutRef.current);
+      if (observerRef.current) observerRef.current.disconnect();
     };
   }, []);
 
