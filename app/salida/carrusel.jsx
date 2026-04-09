@@ -240,20 +240,20 @@ function Carrusel() {
                   src={slide.img}
                   alt={slide.text}
                   loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 "
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
-                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-all duration-500 z-10"></div>
+                <div className="absolute inset-0 bg-white/0 transition-all duration-500 z-10"></div>
 
                 <div className="absolute bottom-0 left-0 right-0 z-30 p-6 sm:p-8 md:p-10">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 leading-tight transform transition-all duration-500 group-hover:translate-x-2">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 leading-tight transform transition-all duration-500 ">
                     {activeIndex === i ? displayText : slide.text}
                     <div className="w-16 h-1 bg-primary-500 rounded-full mt-2 transition-all duration-500 group-hover:w-24"></div>
                   </h2>
-                  <p className="text-sm sm:text-base text-white/80 max-w-lg mb-6 transform transition-all duration-500 delay-75 group-hover:translate-x-2">
+                  <p className="text-sm sm:text-base text-white/80 max-w-lg mb-6 transform transition-all duration-500 delay-75 ">
                     {activeIndex === i ? displaySubtitle : slide.subtitle}
                   </p>
-                  <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                  <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm font-semibold hover:bg-white/20 transition-all duration-300 transform ">
                     <span>Ver proyecto</span>
                     <svg className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

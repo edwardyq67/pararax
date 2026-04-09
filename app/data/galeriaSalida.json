@@ -1,17 +1,17 @@
 {
   "carrusel": [
     {
-      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
+      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/FotoCarrusel1.webp",
       "text": "Visualiza tu SmartFrost",
       "subtitle": "Controla y monitorea la temperatura actual de tus dispositivos desde cualquier lugar"
     },
     {
-      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
+      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/FotoCarrusel2.webp",
       "text": "Temperatura al instante",
       "subtitle": "Recibe información en tiempo real sobre la temperatura de tus equipos"
     },
     {
-      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
+      "img": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/FotoCarrusel3.webp",
       "text": "SmartFrost es tu aliado",
       "subtitle": "Gestiona y asegura tus equipos con precisión y eficiencia"
     }

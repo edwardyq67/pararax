@@ -4,9 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 
 function Paralax({ setVideoListo }) {
   const videoRef = useRef(null);
-  const textRef = useRef(null);          // ✅ Ref al DOM del h1
-  const animatingRef = useRef(false);    // ✅ Control de animación por ref
-  const scrambleTimerRef = useRef(null); // ✅ Para limpiar el interval
+  const textRef = useRef(null);
   
   const [isPageVisible, setIsPageVisible] = useState(true);
   const [videos, setVideos] = useState([]);
@@ -24,57 +22,38 @@ function Paralax({ setVideoListo }) {
     "Eficiencia energética garantizada",
   ];
 
-  // ✅ Scramble escribiendo directo al DOM, sin setState
-  const animateTextChange = useCallback((newText) => {
-    if (animatingRef.current || !textRef.current) return;
-
-    animatingRef.current = true;
-    clearInterval(scrambleTimerRef.current);
-
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let step = 0;
-    const totalSteps = 8;
-
-    scrambleTimerRef.current = setInterval(() => {
-      step++;
-
-      let randomText = "";
-      for (let i = 0; i < newText.length; i++) {
-        if (step > totalSteps * (i / newText.length)) {
-          randomText += newText[i];
-        } else {
-          randomText += chars[Math.floor(Math.random() * chars.length)];
-        }
-      }
-
-      if (textRef.current) textRef.current.textContent = randomText;
-
-      if (step >= totalSteps) {
-        clearInterval(scrambleTimerRef.current);
-        if (textRef.current) textRef.current.textContent = newText;
-        animatingRef.current = false;
-      }
-    }, 50);
+  // Cambio de texto simple
+  const changeText = useCallback((newText) => {
+    if (textRef.current) {
+      textRef.current.textContent = newText;
+    }
   }, []);
 
-  // Auto-cambio de texto con cleanup
+  // Auto-cambio de texto
   useEffect(() => {
     let index = 0;
 
     const interval = setInterval(() => {
       if (isPageVisible) {
         index = (index + 1) % textos.length;
-        animateTextChange(textos[index]);
+        changeText(textos[index]);
       }
     }, 5000);
 
-    return () => {
-      clearInterval(interval);
-      clearInterval(scrambleTimerRef.current);
-    };
-  }, [isPageVisible, animateTextChange]);
+    return () => clearInterval(interval);
+  }, [isPageVisible, changeText, textos]);
 
-  // ... resto de tus useEffects sin cambios ...
+  // Detectar móvil al inicio
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const preloadNextVideo = useCallback((currentIndex) => {
     if (videos.length === 0) return;
@@ -180,7 +159,6 @@ function Paralax({ setVideoListo }) {
     return () => {
       if (nextVideoRef.current) { nextVideoRef.current.src = ''; nextVideoRef.current = null; }
       if (preloadTimeoutRef.current) clearTimeout(preloadTimeoutRef.current);
-      if (scrambleTimerRef.current) clearInterval(scrambleTimerRef.current);
     };
   }, []);
 
@@ -212,7 +190,6 @@ function Paralax({ setVideoListo }) {
       <div className="absolute top-0 left-0 flex flex-col items-center justify-end pb-16 sm:pb-20 w-full h-screen text-white text-center px-4 sm:px-6">
         <div className="relative inline-block max-w-[90vw]">
           <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold py-4 sm:py-6 px-4 sm:px-8 text-white tracking-wide">
-            {/* ✅ ref al span — el scramble escribe aquí sin re-render */}
             <span ref={textRef}>SmartFrost ❄️</span>
           </h1>
           <span className="absolute top-0 left-0 w-3 sm:w-4 h-3 sm:h-4 border-t border-l border-primary rounded-tl-md" />

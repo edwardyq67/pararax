@@ -72,7 +72,7 @@ function Header() {
                     <a
                       href={item.link}
                       onClick={(e) => handleClick(e, item.link)}
-                      className="bg-black/50 backdrop-blur-sm hover:bg-primary-500 py-2 px-5 rounded-full cursor-pointer text-white/80 hover:text-white font-medium text-base transition-all duration-300 inline-block relative group border border-white/10 hover:border-primary-500"
+                      className=" py-2 px-5  cursor-pointer text-white/80 hover:text-white font-medium text-base transition-all duration-300 inline-block relative group"
                     >
                       {item.name}
                     </a>

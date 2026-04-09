@@ -241,12 +241,12 @@ function Carrusel() {
               prev: {
                 translate: ["-40%", 0, -1],
                 scale: 0.7,
-                opacity: 0.4,
+                opacity: 1, // ✅ Cambiado de 0.4 a 1
               },
               next: {
                 translate: ["100%", 0, 0],
                 scale: 0.85,
-                opacity: 0.7,
+                opacity: 1, // ✅ Cambiado de 0.7 a 1
               },
             }}
             modules={[EffectCreative]}
