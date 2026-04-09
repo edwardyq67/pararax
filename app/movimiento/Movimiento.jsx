@@ -259,37 +259,36 @@ function Movimiento() {
     return () => observer.disconnect();
   }, []);
 
-  /* Animación del planeta con scroll - CORREGIDO */
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Calculamos el scroll total disponible
-      const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
-      
-      // Animamos el contenedor del planeta
-      gsap.to(planetContainerRef.current, {
-        x: window.innerWidth * -0.25, // Movimiento lateral durante el scroll
-        y: totalScroll * 0.5, // Movimiento vertical más sutil
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1.5, // Suavizado del scrub
-          invalidateOnRefresh: true,
-        },
-      });
-    }, containerRef);
+/* Animación del planeta con scroll */
+useEffect(() => {
+  const ctx = gsap.context(() => {
+    const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
+    const isMobile = window.innerWidth < 768;
 
-    return () => ctx.revert();
-  }, []);
+    gsap.to(planetContainerRef.current, {
+      x: isMobile ? 0 : window.innerWidth * -0.25, // ✅ Sin movimiento lateral en móvil
+      y: totalScroll * 0.8, // ✅ Más caída vertical en móvil
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.5,
+        invalidateOnRefresh: true,
+      },
+    });
+  }, containerRef);
+
+  return () => ctx.revert();
+}, []);
 
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[210dvh] bg-black overflow-x-hidden"
+      className="relative min-h-[210dvh] bg-black overflow-hidden"
     >
 
       {/* ESTRELLAS - Fondo fijo */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
           <StarsBackground />
         </Canvas>

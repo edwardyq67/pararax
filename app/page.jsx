@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Movimiento from "./movimiento/Movimiento";
 import Carrusel from "./carrusel/carrusel";
+import CarruselCel from "./carrusel/carruselCel";
 import Paralax from "./paralax/Paralax";
 import Galeria from "./galeria/Galeria";
 import GaleriaCel from "./galeria/GaleriaCel";
@@ -106,7 +107,7 @@ export default function Home() {
           <section
             id="productos"
           >
-            <Carrusel />
+            {isMobile ? <CarruselCel /> : <Carrusel />}
           </section>
               <section id="nosotros">
             <Movimiento />
