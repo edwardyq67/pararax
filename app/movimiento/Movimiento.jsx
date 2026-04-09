@@ -284,7 +284,7 @@ useEffect(() => {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[210dvh] bg-black overflow-hidden"
+      className="relative  bg-black overflow-hidden"
     >
 
       {/* ESTRELLAS - Fondo fijo */}

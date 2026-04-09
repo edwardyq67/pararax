@@ -1,48 +1,56 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCreative } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-creative";
 
 function Carrusel() {
-
-  const slides = useMemo(() => [
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
-      text: "Visualiza tu SmartFrost",
-      subtitle:
-        "Controla y monitorea la temperatura actual de tus dispositivos desde cualquier lugar",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
-      text: "Temperatura al instante",
-      subtitle:
-        "Recibe información en tiempo real sobre la temperatura de tus equipos",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
-      text: "SmartFrost es tu aliado",
-      subtitle:
-        "Gestiona y asegura tus equipos con precisión y eficiencia",
-    },
-  ], []);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const swiperRef = useRef(null);
   const containerRef = useRef(null);
   const currentIndexRef = useRef(0);
   const ticking = useRef(false);
 
-  const [displayText, setDisplayText] = useState(slides[0].text);
-  const [displaySubtitle, setDisplaySubtitle] = useState(slides[0].subtitle);
+  const [displayText, setDisplayText] = useState("");
+  const [displaySubtitle, setDisplaySubtitle] = useState("");
   const [progressBar, setProgressBar] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const animatingRef = useRef(false);
 
+  // Fetch slides from API
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch('/api/carrusel');
+        if (!response.ok) {
+          throw new Error('Error al cargar los datos');
+        }
+        const data = await response.json();
+        const galeria = data.galeria || [];
+        setSlides(galeria);
+        if (galeria.length > 0) {
+          setDisplayText(galeria[0].text);
+          setDisplaySubtitle(galeria[0].subtitle);
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSlides();
+  }, []);
+
   // 🔹 Animación de texto optimizada
-  const animateTextChange = (newText, setText) => {
+  const animateTextChange = useCallback((newText, setText) => {
     if (animatingRef.current) return;
 
     animatingRef.current = true;
@@ -74,10 +82,10 @@ function Carrusel() {
         animatingRef.current = false;
       }
     }, 50);
-  };
+  }, []);
 
   // 🔹 Botones navegación
-  const goToSlide = (index) => {
+  const goToSlide = useCallback((index) => {
     if (!containerRef.current) return;
 
     const offsetTop = containerRef.current.offsetTop;
@@ -87,9 +95,10 @@ function Carrusel() {
       top: targetScroll,
       behavior: "smooth",
     });
-  };
+  }, []);
 
   useEffect(() => {
+    if (slides.length === 0) return;
 
     // 🔥 precargar swiper para evitar lag inicial
     if (swiperRef.current?.swiper) {
@@ -97,7 +106,6 @@ function Carrusel() {
     }
 
     const updateScroll = () => {
-
       if (!containerRef.current || !swiperRef.current?.swiper) {
         ticking.current = false;
         return;
@@ -122,7 +130,6 @@ function Carrusel() {
       );
 
       if (section !== currentIndexRef.current) {
-
         currentIndexRef.current = section;
         setActiveIndex(section);
 
@@ -152,8 +159,31 @@ function Carrusel() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [slides, animateTextChange]);
 
-  }, [slides]);
+  if (loading) {
+    return (
+      <div className="relative w-full h-screen bg-black flex items-center justify-center z-30">
+        <div className="text-white">Cargando...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="relative w-full h-screen bg-black flex items-center justify-center z-30">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) {
+    return (
+      <div className="relative w-full h-screen bg-black flex items-center justify-center z-30">
+        <div className="text-white">No hay datos disponibles</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -233,7 +263,7 @@ function Carrusel() {
 
                   <img
                     src={slide.img}
-                    alt=""
+                    alt={slide.text}
                     loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover will-change-transform"
                   />

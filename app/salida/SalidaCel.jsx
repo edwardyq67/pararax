@@ -3,8 +3,7 @@ import Carrusel from './carrusel'
 
 function SalidaCel() {
   return (
-    <section className="relative grid gap-14 bg-white">
-
+    <section className="relative grid gap-8 sm:gap-10 md:gap-12 lg:gap-14 bg-white">
 
       {/* CONTENIDO DESPUÉS */}
       <div className="flex flex-col items-center justify-center relative">
@@ -17,7 +16,7 @@ function SalidaCel() {
 
           {/* Esquinas - Tamaños responsivos */}
           <span className="absolute top-0 left-0 w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 border-t border-l border-gray-900 rounded-tl-md z-20"></span>
-          <span className="absolute top-0 right-0 w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 border-t border-r border-gray-900 rounded-tr-md z-20"></span>
+          <span className="absolute top-0 right-0 w-3 sm:w-4 md:h-5 h-3 sm:h-4 md:h-5 border-t border-r border-gray-900 rounded-tr-md z-20"></span>
           <span className="absolute bottom-0 left-0 w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 border-b border-l border-gray-900 rounded-bl-md z-20"></span>
           <span className="absolute bottom-0 right-0 w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5 border-b border-r border-gray-900 rounded-br-md z-20"></span>
         </div>

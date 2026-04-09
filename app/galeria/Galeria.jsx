@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger, Flip } from "gsap/all";
-import { motion } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger, Flip);
 
@@ -17,14 +16,14 @@ function Galeria() {
     const [videoPlayed, setVideoPlayed] = useState(false);
 
     const fotoVideo = [
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoIzqArriba_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoCenArriba_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoCentral_lg.webp", video: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/video/FotoCenAbajo_lg.mp4" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoDerArriba_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoIzqCen_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoDerAbajo_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoIzqAbajo_lg.webp", video: "" },
-        { foto: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/escritorio/FotoCenAbajo_lg.webp", video: "" }
+        { foto: "/galeria/escritorio/FotoIzqArriba_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoCenArriba_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoCenCentro_lg.webp", video: "/galeria/escritorio/VideoCentral_lg.mp4" },
+        { foto: "/galeria/escritorio/FotoDerArriba_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoIzqCen_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoDerAbajo_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoIzqAbajo_lg.webp", video: "" },
+        { foto: "/galeria/escritorio/FotoCenAbajo_lg.webp", video: "" }
     ];
 
     // 🔥 FETCH DATA
@@ -152,20 +151,6 @@ function Galeria() {
         return () => cancelAnimationFrame(rafId);
     }, [data, createTween]);
 
-    // Variantes de animación para los cards
-    const cardVariants = {
-        hidden: { opacity: 0, y: 50, scale: 0.9 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: {
-                duration: 0.5,
-                ease: "easeOut"
-            }
-        }
-    };
-
     // Grid areas para cada posición
     const gridAreas = [
         "1 / 1 / 3 / 2",
@@ -194,11 +179,8 @@ function Galeria() {
                     "
                 >
                     {fotoVideo.map((item, i) => (
-                        <motion.div
+                        <div
                             key={i}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.6, delay: i * 0.1 }}
                             className="gallery__item relative w-full h-full overflow-hidden group cursor-pointer"
                             style={{ gridArea: gridAreas[i] }}
                             onMouseEnter={() => handleMouseEnter(i)}
@@ -244,7 +226,7 @@ function Galeria() {
                                     </svg>
                                 </div>
                             )}
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 
@@ -260,15 +242,9 @@ function Galeria() {
                     "
                 >
                     {/* 🔥 TÍTULO */}
-                    <motion.h2
-                        initial={{ opacity: 0, y: -30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: false, margin: "-100px" }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="text-4xl md:text-5xl font-bold mb-40 text-center text-white"
-                    >
+                    <h2 className="text-4xl md:text-5xl font-bold mb-40 text-center text-white">
                         Empresas que confían en nosotros
-                    </motion.h2>
+                    </h2>
 
                     {/* 🔥 GRID DE 2 COLUMNAS EN ZIGZAG */}
                     <div className="max-w-6xl mx-auto">
@@ -281,19 +257,15 @@ function Galeria() {
                                 while (dataIndex < data.length) {
                                     if (dataIndex < data.length) {
                                         elementos.push(
-                                            <motion.div
+                                            <div
                                                 key={`item-${dataIndex}`}
-                                                variants={cardVariants}
-                                                initial="hidden"
-                                                whileInView="visible"
-                                                viewport={{ once: false, margin: "-50px" }}
                                                 className="flex justify-center mb-20"
                                             >
-                                                <span className="bg-white rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                                    <div className="h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
+                                                <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                                    <div className="h-2 w-2 rounded-full bg-primary-500" />
                                                     <span className="text-gray-800 font-medium">{data[dataIndex]}</span>
                                                 </span>
-                                            </motion.div>
+                                            </div>
                                         );
                                         dataIndex++;
                                         position++;
@@ -305,19 +277,15 @@ function Galeria() {
 
                                     for (let i = 0; i < 2 && dataIndex < data.length; i++) {
                                         elementos.push(
-                                            <motion.div
+                                            <div
                                                 key={`item-${dataIndex}`}
-                                                variants={cardVariants}
-                                                initial="hidden"
-                                                whileInView="visible"
-                                                viewport={{ once: false, margin: "-50px" }}
                                                 className="flex justify-center mb-20"
                                             >
-                                                <span className="bg-white rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                                    <div className="h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
+                                                <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                                    <div className="h-2 w-2 rounded-full bg-primary-500" />
                                                     <span className="text-gray-800 font-medium">{data[dataIndex]}</span>
                                                 </span>
-                                            </motion.div>
+                                            </div>
                                         );
                                         dataIndex++;
                                         position++;

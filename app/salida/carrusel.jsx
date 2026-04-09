@@ -135,7 +135,7 @@ function Carrusel() {
   };
 
   return (
-    <div className="w-full min-h-[100dvh] bg-white flex flex-col items-center justify-center overflow-hidden">
+    <div className="w-full  bg-white flex flex-col items-center justify-center overflow-hidden">
 
       {/* NAV */}
       <div className="w-[92vw] sm:w-[90vw] flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4">

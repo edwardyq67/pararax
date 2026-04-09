@@ -1,37 +1,54 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 
 function CarruselCel() {
-  const slides = useMemo(() => [
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
-      text: "Visualiza tu SmartFrost",
-      subtitle: "Controla y monitorea la temperatura actual de tus dispositivos desde cualquier lugar",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
-      text: "Temperatura al instante",
-      subtitle: "Recibe información en tiempo real sobre la temperatura de tus equipos",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
-      text: "SmartFrost es tu aliado",
-      subtitle: "Gestiona y asegura tus equipos con precisión y eficiencia",
-    },
-  ], []);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch('/api/carrusel');
+        if (!response.ok) {
+          throw new Error('Error al cargar los datos');
+        }
+        const data = await response.json();
+        setSlides(data.galeria || []);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSlides();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full bg-black py-8 px-4">
+        <div className="text-center text-white">Cargando...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full bg-black py-8 px-4">
+        <div className="text-center text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-black py-8 px-4">
       <div className="grid grid-cols-1 gap-6">
         {slides.map((slide, index) => (
-          <motion.div
+          <div
             key={index}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            viewport={{ once: true, margin: "-50px" }}
             className="bg-gradient-to-b from-gray-900 to-black rounded-2xl overflow-hidden border border-white/10"
           >
             {/* Imagen */}
@@ -56,7 +73,7 @@ function CarruselCel() {
                 Ver más →
               </button>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

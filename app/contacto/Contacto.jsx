@@ -53,19 +53,6 @@ function Contacto() {
     { name: "Libro de Reclamaciones", url: "/libro-de-reclamaciones" }
   ];
 
-  // Variantes para el footer
-  const footerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
     <div className="w-full bg-white flex flex-col items-center justify-center">
       <div className="w-full bg-white flex items-center justify-center">
@@ -216,52 +203,46 @@ function Contacto() {
         </motion.div>
       </div>
      
- {/* Footer con animación */}
-<motion.div 
-  variants={footerVariants}
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: false, margin: "-100px" }}
-  className='bg-black z-50 w-full text-white'
->
-  <div className="w-full flex flex-col items-center justify-center py-12 px-4">
-    {/* Redes sociales */}
-    <div className="flex gap-6 z-50 mb-6">
-      {socialLinks.map((social, index) => (
-        <a
-          key={index}
-          href={social.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${social.color} transition-colors duration-300`}
-        >
-          <social.icon size={30} />
-        </a>
-      ))}
-    </div>
+      {/* Footer sin motion */}
+      <div className='bg-black z-50 w-full text-white'>
+        <div className="w-full flex flex-col items-center justify-center py-12 px-4">
+          {/* Redes sociales */}
+          <div className="flex gap-6 z-50 mb-6">
+            {socialLinks.map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${social.color} transition-colors duration-300`}
+              >
+                <social.icon size={30} />
+              </a>
+            ))}
+          </div>
 
-    {/* Línea divisoria */}
-    <div className="w-full max-w-6xl h-px bg-gray-700 mb-8 z-50"></div>
-    
-    {/* Enlaces de términos y condiciones */}
-    <div className="flex flex-wrap justify-center gap-6 mb-8 z-50">
-      {links.map((link, index) => (
-        <a
-          key={index}
-          href={link.url}
-          className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-        >
-          {link.name}
-        </a>
-      ))}
-    </div>
-    
-    {/* Copyright */}
-    <p className="text-gray-500 text-sm z-50">
-      © {new Date().getFullYear()} Todos los derechos reservados
-    </p>
-  </div>
-</motion.div>
+          {/* Línea divisoria */}
+          <div className="w-full max-w-6xl h-px bg-gray-700 mb-8 z-50"></div>
+          
+          {/* Enlaces de términos y condiciones */}
+          <div className="flex flex-wrap justify-center gap-6 mb-8 z-50">
+            {links.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+          
+          {/* Copyright */}
+          <p className="text-gray-500 text-sm z-50">
+            © {new Date().getFullYear()} Todos los derechos reservados
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

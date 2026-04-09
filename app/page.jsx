@@ -22,12 +22,7 @@ export default function Home() {
   const [permiso, setPermiso] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [videoListo, setVideoListo] = useState(false);
-
-  /*cambiar a  fixed*/
-  const [pararaxFixed, setPararaxFixed] = useState('fixed');
-  const [carruselFixed, setCarruselFixed] = useState('');
-  const [movimientoFixed, setMovimientoFixed] = useState(0);
-
+  
   /* Detectar si es celular */
   useEffect(() => {
     const checkMobile = () => {
@@ -40,56 +35,20 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  /* Loader */
+  // Cuando el video esté listo, cargar el contenido
   useEffect(() => {
-    const handleLoad = () => {
-      setTimeout(() => {
+    if (videoListo) {
+      const timer = setTimeout(() => {
         setIsLoading(false);
       }, 500);
-    };
-
-    if (document.readyState === "complete") {
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
+      
+      return () => clearTimeout(timer);
     }
   }, [videoListo]);
 
-  /* 🔎 Detectar en qué sección estás */
-  useEffect(() => {
-    let currentSection = "";
-
-    const handleScroll = () => {
-      const vh = window.innerHeight;
-      const scroll = window.scrollY;
-
-      // alturas de tus secciones
-      const paralaxEnd = vh * 2; // 200vh
-      const carruselEnd = paralaxEnd + vh * 3; // 300vh
-      const movimientoEnd = carruselEnd + vh * 2; // 200vh
-
-      let newSection = "";
-
-      if (scroll < paralaxEnd) newSection = "PARALAX";
-      else if (scroll < carruselEnd) newSection = "CARRUSEL";
-      else if (scroll < movimientoEnd) newSection = "MOVIMIENTO";
-      else newSection = "RESTO (GALERIA / BLOG / ETC)";
-
-      if (newSection !== currentSection) {
-        currentSection = newSection;
-        console.log("📍 Estás en:", newSection);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <>
-      {/* Loader */}
+      {/* Loader - siempre visible hasta que se cumplan condiciones */}
       {!permiso && (
         <Loader
           isLoading={isLoading}
@@ -98,20 +57,24 @@ export default function Home() {
         />
       )}
 
-      {/* Contenido */}
+      {/* ✅ PARALAX SIEMPRE ESTÁ MONTADO (fuera de permiso) */}
+      <div style={{ display: permiso ? 'block' : 'none' }}>
+        <section id="inicio">
+          <Paralax setVideoListo={setVideoListo} />
+        </section>
+      </div>
+
+      {/* Contenido restante - solo visible cuando permiso = true */}
       {permiso && (
         <div>
-          <section id="inicio">
-            <Paralax setVideoListo={setVideoListo} />
-          </section>
-          <section
-            id="productos"
-          >
+          <section id="productos">
             {isMobile ? <CarruselCel /> : <Carrusel />}
           </section>
-              <section id="nosotros">
+          
+          <section id="nosotros">
             <Movimiento />
           </section>
+          
           <section id="galeria">
             {isMobile ? <GaleriaCel /> : <Galeria />}
           </section>
@@ -127,13 +90,6 @@ export default function Home() {
           <section id="contacto">
             <Contacto />
           </section>
-
-
-          {/* Carrusel sticky 
-          
-
-         
-          {/* Galería responsiva */}
         </div>
       )}
     </>

@@ -2,27 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-export default function Loader({ isLoading, setPermiso, videoListo }) {
+export default function Loader({ setPermiso, videoListo }) {
   const [progress, setProgress] = useState(0);
 
+  // Animación de progreso
   useEffect(() => {
     let interval;
-
+    
     const updateProgress = () => {
       setProgress((prev) => {
-        if (prev < 80) {
-          return Math.min(prev + 3, 80);
-        }
-
-        if (videoListo) {
-          return 80;
-        }
-
-        if (prev < 100) {
-          return Math.min(prev + 5, 100);
-        }
-
-        return 100;
+        if (prev < 80) return Math.min(prev + 3, 80);
+        if (videoListo && prev < 100) return Math.min(prev + 5, 100);
+        return prev;
       });
     };
 
@@ -30,19 +21,15 @@ export default function Loader({ isLoading, setPermiso, videoListo }) {
     return () => clearInterval(interval);
   }, [videoListo]);
 
+  // Cuando progreso llegue a 100, activar permiso
   useEffect(() => {
-    // Solo cuando isLoading es false (la página cargó) Y el progreso está en 100
-    if (!isLoading && progress >= 100) {
+    if (progress >= 100) {
       const timer = setTimeout(() => {
         setPermiso(true);
       }, 300);
-      
       return () => clearTimeout(timer);
     }
-  }, [isLoading, progress, setPermiso]);
-
-  // Si isLoading es true, mostramos el loader (pero ya se muestra siempre)
-  // Si isLoading es false y progress está en 100, entonces desaparece
+  }, [progress, setPermiso]);
 
   return (
     <>
