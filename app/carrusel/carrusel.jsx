@@ -217,7 +217,7 @@ function Carrusel() {
           <div className="flex gap-3 items-center">
 
             <span className="text-white/20 text-sm">
-              Teknisolutions
+              SmartFrost
             </span>
 
             <div className="w-40 h-[8px] bg-primary/20 rounded-full overflow-hidden">

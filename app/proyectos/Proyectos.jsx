@@ -1,38 +1,75 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 
 function Proyectos() {
-  const card = [
-    {
-      id: 1,
-      title: "Proyectos1",
-      imagen: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
-      descripcion:
-        "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
-      fecha: "05/07/2024",
-      categorias: ["Educacion", "Hardware", "Software"],
-    },
-    {
-      id: 2,
-      title: "Proyectos2",
-      imagen: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
-      descripcion:
-        "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
-      fecha: "05/07/2024",
-      categorias: ["Educacion", "Hardware", "Software"],
-    },
-    {
-      id: 3,
-      title: "Proyectos3",
-      imagen: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
-      descripcion:
-        "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
-      fecha: "05/07/2024",
-      categorias: ["Educacion", "Hardware", "Software"],
-    },
-  ];
+  const [card, setCard] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 🔥 Fetch datos desde API
+  useEffect(() => {
+    const fetchProyectos = async () => {
+      try {
+        const response = await fetch("/api/proyectos");
+        if (!response.ok) {
+          throw new Error("Error al cargar los proyectos");
+        }
+        const result = await response.json();
+        // Si la API devuelve { proyectos: [...] }
+        setCard(result.proyectos || []);
+        // Si la API devuelve directamente el array, usar:
+        // setCard(result || []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchProyectos();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="bg-white w-full min-h-screen relative py-24 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-500 text-sm sm:text-base">Cargando proyectos...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="bg-white w-full min-h-screen relative py-24 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center text-red-500">
+            <p>Error: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (card.length === 0) {
+    return (
+      <section className="bg-white w-full min-h-screen relative py-24 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center text-gray-500">
+            <p>No hay proyectos disponibles</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="bg-white  w-full min-h-screen relative py-24 px-4 sm:px-6 lg:px-8">
+    <section className="bg-white w-full min-h-screen relative py-24 px-4 sm:px-6 lg:px-8">
 
       {/* 🔥 TÍTULO */}
       <div className="text-center mb-20">
@@ -66,7 +103,6 @@ function Proyectos() {
               transform
               cursor-pointer
               hover:-translate-y-3
-
               "
             >
 
@@ -81,7 +117,6 @@ function Proyectos() {
 
                 {/* overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-
 
               </div>
 

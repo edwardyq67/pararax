@@ -6,38 +6,47 @@ import { Autoplay, EffectCreative } from "swiper/modules";
 import "swiper/css";
 
 function Carrusel() {
-  const slides = [
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
-      text: "Visualiza tu SmartFrost",
-      subtitle:
-        "Controla y monitorea la temperatura actual de tus dispositivos desde cualquier lugar",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
-      text: "Temperatura al instante",
-      subtitle:
-        "Recibe información en tiempo real sobre la temperatura de tus equipos",
-    },
-    {
-      img: "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
-      text: "SmartFrost es tu aliado",
-      subtitle:
-        "Gestiona y asegura tus equipos con precisión y eficiencia",
-    },
-  ];
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const swiperRef = useRef(null);
   const progressInterval = useRef(null);
   const startTimeRef = useRef(null);
 
-  const [displayText, setDisplayText] = useState(slides[0].text);
-  const [displaySubtitle, setDisplaySubtitle] = useState(slides[0].subtitle);
+  const [displayText, setDisplayText] = useState("");
+  const [displaySubtitle, setDisplaySubtitle] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressBar, setProgressBar] = useState(0);
 
   const slideDelay = 4000;
+
+  // 🔥 Fetch datos desde API
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch("/api/galeriaSalida");
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos");
+        }
+        const result = await response.json();
+        const carruselData = result.carrusel || [];
+        setSlides(carruselData);
+        if (carruselData.length > 0) {
+          setDisplayText(carruselData[0].text);
+          setDisplaySubtitle(carruselData[0].subtitle);
+        }
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchSlides();
+  }, []);
 
   // 🔹 Animación texto suave
   const animateTextChange = (newText, setText) => {
@@ -96,6 +105,8 @@ function Carrusel() {
 
   // 🔹 Iniciar barra de progreso al montar
   useEffect(() => {
+    if (slides.length === 0) return;
+    
     startTimeRef.current = Date.now();
     progressInterval.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
@@ -108,7 +119,7 @@ function Carrusel() {
     }, 16);
     
     return () => clearInterval(progressInterval.current);
-  }, []);
+  }, [slides]);
 
   // 🔹 Limpiar intervalo cuando cambia activeIndex
   useEffect(() => {
@@ -134,8 +145,39 @@ function Carrusel() {
     swiperRef.current?.swiper.slideNext();
   };
 
+  if (loading) {
+    return (
+      <div className="w-full bg-white flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 text-sm sm:text-base">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full bg-white flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-center text-red-500">
+          <p>Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) {
+    return (
+      <div className="w-full bg-white flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-center text-gray-500">
+          <p>No hay datos disponibles</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full  bg-white flex flex-col items-center justify-center overflow-hidden">
+    <div className="w-full bg-white flex flex-col items-center justify-center overflow-hidden">
 
       {/* NAV */}
       <div className="w-[92vw] sm:w-[90vw] flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4">
@@ -147,7 +189,7 @@ function Carrusel() {
               className={`relative cursor-pointer px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 rounded-full
                 ${activeIndex === index
                   ? "text-white bg-primary-600"
-                  : "text-black hover:bg-white/10"
+                  : "text-black hover:bg-gray-100"
                 }`}
             >
               {index === 0 && "Explorar"}
@@ -157,7 +199,7 @@ function Carrusel() {
           ))}
         </div>
 
-        {/* Barra de progreso - Corregida */}
+        {/* Barra de progreso */}
         <div className="flex gap-2 items-center justify-center w-full sm:w-auto">
           <span className="text-gray-500 text-xs sm:text-sm">Progreso</span>
           <div className="flex-1 sm:w-40 max-w-[200px] h-[5px] sm:h-[6px] bg-black/20 rounded-full overflow-hidden">
@@ -196,7 +238,7 @@ function Carrusel() {
               <div className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl group cursor-pointer">
                 <img
                   src={slide.img}
-                  alt=""
+                  alt={slide.text}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

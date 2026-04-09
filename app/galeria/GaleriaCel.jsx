@@ -1,28 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade } from "swiper/modules";
-
-import "swiper/css";
-import "swiper/css/effect-fade";
+import React, { useEffect, useState, useRef } from "react";
 
 function GaleriaCel() {
   const [imagenes, setImagenes] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoPlayed, setVideoPlayed] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseImagenes = await fetch("/api/galeriaCel");
-        const resultImagenes = await responseImagenes.json();
-        setImagenes(resultImagenes.fotosCel || []);
+        const response = await fetch("/api/galeria/galeriaCel");
+        const result = await response.json();
         
-        const responseTextos = await fetch("/api/galeria");
-        const resultTextos = await responseTextos.json();
-        setEmpresas(resultTextos.textosCel || []);
-        
+        setImagenes(result.fotosCel || []);
+        setEmpresas(result.textosCel || []);
         setLoading(false);
       } catch (error) {
         console.error("Error cargando datos:", error);
@@ -32,6 +26,30 @@ function GaleriaCel() {
 
     fetchData();
   }, []);
+
+  // Obtener la URL del video (el primer elemento del array o el string)
+  const videoUrl = imagenes.length > 0 ? imagenes[0] : null;
+
+  // Auto-reproducir video cuando esté visible
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement || !videoUrl) return;
+
+    const handleCanPlay = () => {
+      videoElement.play().catch(e => console.log("Error playing video:", e));
+    };
+
+    videoElement.addEventListener('canplay', handleCanPlay);
+    
+    // Intentar reproducir inmediatamente si ya está listo
+    if (videoElement.readyState >= 2) {
+      videoElement.play().catch(e => console.log("Error playing video:", e));
+    }
+
+    return () => {
+      videoElement.removeEventListener('canplay', handleCanPlay);
+    };
+  }, [videoUrl]);
 
   if (loading) {
     return (
@@ -49,32 +67,23 @@ function GaleriaCel() {
       
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         
-        {/* Carrusel de imágenes responsivo */}
+        {/* Video responsivo */}
         <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-5xl">
-          <Swiper
-            modules={[Autoplay, EffectFade]}
-            effect="fade"
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-            loop={true}
-            speed={1000}
-            className="w-full"
-          >
-            {imagenes.map((img, index) => (
-              <SwiperSlide key={index}>
-                <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
-                  <img
-                    src={img}
-                    alt={`Empresa ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
+            {videoUrl && (
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                className="w-full h-full object-cover"
+                loop
+                muted
+                playsInline
+                autoPlay
+                onPlay={() => setVideoPlayed(true)}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          </div>
         </div>
 
         {/* Carrusel de empresas responsivo */}

@@ -25,7 +25,6 @@ const Counter = ({ targetValue, label, suffix = "", isVisible }) => {
 
   useEffect(() => {
     if (isVisible && !hasAnimated) {
-      let start = 0;
       const duration = 2000;
       const stepTime = 16;
       const steps = duration / stepTime;
@@ -267,7 +266,7 @@ useEffect(() => {
 
     gsap.to(planetContainerRef.current, {
       x: isMobile ? 0 : window.innerWidth * -0.25, // ✅ Sin movimiento lateral en móvil
-      y: totalScroll * 0.8, // ✅ Más caída vertical en móvil
+      y: totalScroll * 1.02, // ✅ Más caída vertical en móvil
       scrollTrigger: {
         trigger: containerRef.current,
         start: "top top",

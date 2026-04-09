@@ -1,0 +1,28 @@
+{
+  "proyectos": [
+    {
+      "id": 1,
+      "title": "Proyectos1",
+      "imagen": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/PrimerProducto.webp",
+      "descripcion": "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
+      "fecha": "05/07/2024",
+      "categorias": ["Educacion", "Hardware", "Software"]
+    },
+    {
+      "id": 2,
+      "title": "Proyectos2",
+      "imagen": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/SegundoProducto.webp",
+      "descripcion": "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
+      "fecha": "05/07/2024",
+      "categorias": ["Educacion", "Hardware", "Software"]
+    },
+    {
+      "id": 3,
+      "title": "Proyectos3",
+      "imagen": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/imagenes%20carusel/TercerProducto.webp",
+      "descripcion": "Training India's Next-Gen Automation Engineers: Inside the Addverb & NAMTECH Robotics Lab",
+      "fecha": "05/07/2024",
+      "categorias": ["Educacion", "Hardware", "Software"]
+    }
+  ]
+}
