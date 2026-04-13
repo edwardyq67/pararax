@@ -54,7 +54,7 @@ function Contacto() {
   ];
 
   return (
-    <div className="w-full bg-white flex flex-col items-center justify-center">
+    <div className="w-full pt-10 md:pt-36 bg-white flex flex-col items-center justify-center">
       <div className="w-full bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 100 }}

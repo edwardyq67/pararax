@@ -6,23 +6,19 @@ import { ScrollTrigger, Flip } from "gsap/all";
 
 gsap.registerPlugin(ScrollTrigger, Flip);
 
-function Galeria() {
+function Galeria({ setVideoListoDos }) {
     const galleryRef = useRef(null);
     const contentRef = useRef(null);
     const ctxRef = useRef(null);
-    const videoRefs = useRef({});
-    const nextVideoRef = useRef(null);
-    const preloadTimeoutRef = useRef(null);
-    const checkIntervalRef = useRef(null);
+    const videoRef = useRef(null); // Solo un video reference
     const observerRef = useRef(null);
 
     const [data, setData] = useState([]);
     const [fotoVideo, setFotoVideo] = useState([]);
-    const [videoPlayed, setVideoPlayed] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-    const [currentSubIndex, setCurrentSubIndex] = useState({});
-    const [isVideoActive, setIsVideoActive] = useState(false);
+    const [videoUrl, setVideoUrl] = useState("");
+    const [isVideoReady, setIsVideoReady] = useState(false);
+    const [isVideoVisible, setIsVideoVisible] = useState(false);
 
     // 🔥 FETCH DATA
     useEffect(() => {
@@ -42,43 +38,69 @@ function Galeria() {
         getData();
     }, []);
 
-    const getVideoUrl = useCallback((item, subIndex = 0) => {
-        if (!item || !item.video) return null;
-        if (Array.isArray(item.video)) {
-            return item.video[subIndex % item.video.length];
-        }
-        return item.video;
-    }, []);
-
-    const getVideoLength = useCallback((item) => {
-        if (!item || !item.video) return 0;
-        if (Array.isArray(item.video)) {
-            return item.video.length;
-        }
-        return 1;
-    }, []);
-
-    const videoItems = fotoVideo.filter(item => item.video && 
-        (Array.isArray(item.video) ? item.video.length > 0 : item.video !== ""));
-    
-    const hasVideos = videoItems.length > 0;
-
-    // 🔥 IntersectionObserver - SOLO para pausar si no es visible (ahorro de recursos)
+    // Obtener la URL del video del índice 2
     useEffect(() => {
-        const videoElement = videoRefs.current[2];
-        if (!videoElement) return;
+        if (fotoVideo.length > 0 && fotoVideo[2]) {
+            const item = fotoVideo[2];
+            if (item.video) {
+                const url = Array.isArray(item.video) ? item.video[0] : item.video;
+                setVideoUrl(url);
+            }
+        }
+    }, [fotoVideo]);
+
+    // 🔥 Configurar video cuando la URL está lista
+    useEffect(() => {
+        if (!videoUrl || !videoRef.current) return;
+        
+        const video = videoRef.current;
+        video.src = videoUrl;
+        video.load();
+        
+        const handleCanPlay = () => {
+            setIsVideoReady(true);
+            setVideoListoDos(true); // ✅ Video listo para reproducirse
+            
+            // Hacer visible el video y reproducir
+            video.style.opacity = "1";
+            
+            if (isVideoVisible) {
+                video.play().catch(e => console.log("Error playing video:", e));
+            }
+        };
+        
+        video.addEventListener('canplay', handleCanPlay);
+        video.addEventListener('loadeddata', handleCanPlay);
+        
+        // Si ya está cargado
+        if (video.readyState >= 3) {
+            handleCanPlay();
+        }
+        
+        return () => {
+            video.removeEventListener('canplay', handleCanPlay);
+            video.removeEventListener('loadeddata', handleCanPlay);
+        };
+    }, [videoUrl, setVideoListoDos, isVideoVisible]);
+
+    // 🔥 IntersectionObserver para detectar visibilidad
+    useEffect(() => {
+        const videoElement = videoRef.current;
+        if (!videoElement || !isVideoReady) return;
 
         observerRef.current = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
-                    if (!entry.isIntersecting && isVideoActive) {
-                        // Video no visible - pausar para ahorrar recursos
+                    if (entry.isIntersecting) {
+                        setIsVideoVisible(true);
+                        if (videoElement.paused) {
+                            videoElement.play().catch(e => console.log("Error resuming:", e));
+                        }
+                    } else {
+                        setIsVideoVisible(false);
                         if (!videoElement.paused) {
                             videoElement.pause();
                         }
-                    } else if (entry.isIntersecting && isVideoActive && videoElement.paused) {
-                        // Video visible nuevamente - reanudar
-                        videoElement.play().catch(e => console.log("Error resuming:", e));
                     }
                 });
             },
@@ -95,159 +117,35 @@ function Galeria() {
                 observerRef.current.disconnect();
             }
         };
-    }, [isVideoActive]);
+    }, [isVideoReady]);
 
-    // Precargar siguiente video
-    const preloadNextVideo = useCallback((currentIndex, currentSubIdx = 0) => {
-        if (videoItems.length === 0) return;
-        
-        const nextIndex = (currentIndex + 1) % videoItems.length;
-        const nextItem = videoItems[nextIndex];
-        const nextVideoUrl = getVideoUrl(nextItem, 0);
-        
-        if (!nextVideoUrl) return;
-        
-        if (preloadTimeoutRef.current) {
-            clearTimeout(preloadTimeoutRef.current);
-        }
-        
-        preloadTimeoutRef.current = setTimeout(() => {
-            if (nextVideoRef.current) {
-                nextVideoRef.current.src = nextVideoUrl;
-                nextVideoRef.current.load();
-                console.log(`🔄 Precargando video ${nextIndex + 1}`);
-            } else {
-                const hiddenVideo = document.createElement('video');
-                hiddenVideo.preload = 'auto';
-                hiddenVideo.src = nextVideoUrl;
-                hiddenVideo.load();
-                nextVideoRef.current = hiddenVideo;
-            }
-        }, 100);
-    }, [videoItems, getVideoUrl]);
-
-    // Reproducir siguiente video
-    const playNextVideo = useCallback(() => {
-        if (videoItems.length === 0 || !isVideoActive) return;
-        
-        const videoElement = videoRefs.current[2];
-        if (!videoElement) return;
-        
-        const currentItem = videoItems[currentVideoIndex];
-        const currentLength = getVideoLength(currentItem);
-        
-        if (currentLength > 1) {
-            const nextSubIndex = ((currentSubIndex[2] || 0) + 1) % currentLength;
-            const nextVideoUrl = getVideoUrl(currentItem, nextSubIndex);
-            
-            if (nextVideoUrl) {
-                setCurrentSubIndex(prev => ({ ...prev, [2]: nextSubIndex }));
-                videoElement.src = nextVideoUrl;
-                videoElement.load();
-                if (isVideoActive) {
-                    videoElement.play().catch(e => console.log("Error:", e));
-                }
-                return;
-            }
-        }
-        
-        const nextIndex = (currentVideoIndex + 1) % videoItems.length;
-        
-        if (nextVideoRef.current?.src) {
-            const tempSrc = nextVideoRef.current.src;
-            nextVideoRef.current.src = videoElement.src;
-            videoElement.src = tempSrc;
-            if (isVideoActive) {
-                videoElement.play().catch(e => console.log("Error:", e));
-            }
-            setCurrentVideoIndex(nextIndex);
-            setCurrentSubIndex(prev => ({ ...prev, [2]: 0 }));
-            preloadNextVideo(nextIndex, 0);
-        } else {
-            const nextItem = videoItems[nextIndex];
-            const nextVideoUrl = getVideoUrl(nextItem, 0);
-            if (nextVideoUrl) {
-                setCurrentVideoIndex(nextIndex);
-                setCurrentSubIndex(prev => ({ ...prev, [2]: 0 }));
-                videoElement.src = nextVideoUrl;
-                videoElement.load();
-                if (isVideoActive) {
-                    videoElement.play().catch(e => console.log("Error:", e));
-                }
-                preloadNextVideo(nextIndex, 0);
-            }
-        }
-    }, [currentVideoIndex, currentSubIndex, videoItems, preloadNextVideo, getVideoUrl, getVideoLength, isVideoActive]);
-
-    // Detectar cuando el video está por terminar
-    const setupVideoProgressCheck = useCallback((videoElement) => {
-        if (!videoElement) return;
-        
-        if (checkIntervalRef.current) {
-            clearInterval(checkIntervalRef.current);
-        }
-        
-        checkIntervalRef.current = setInterval(() => {
-            if (videoElement && videoElement.duration && !videoElement.paused && isVideoActive) {
-                if (videoElement.duration - videoElement.currentTime < 0.1) {
-                    clearInterval(checkIntervalRef.current);
-                    checkIntervalRef.current = null;
-                    playNextVideo();
-                }
-            }
-        }, 50);
-    }, [playNextVideo, isVideoActive]);
-
-    // ✅ Manejador de hover - Activa el video y NUNCA lo detiene por mouse leave
-    const handleMouseEnter = useCallback(() => {
-        const videoElement = videoRefs.current[2];
-        if (videoElement && videoItems.length > 0 && !isVideoActive) {
-            setIsVideoActive(true);
-            
-            const currentItem = videoItems[currentVideoIndex];
-            const currentVideoUrl = getVideoUrl(currentItem, currentSubIndex[2] || 0);
-            
-            if (currentVideoUrl && videoElement.src !== currentVideoUrl) {
-                videoElement.src = currentVideoUrl;
-                videoElement.load();
-            }
-            videoElement.style.opacity = "1";
-            videoElement.currentTime = 0;
-            videoElement.play()
-                .then(() => {
-                    setVideoPlayed(true);
-                    preloadNextVideo(currentVideoIndex, currentSubIndex[2] || 0);
-                    setupVideoProgressCheck(videoElement);
-                })
-                .catch(e => console.log("Error playing video:", e));
-        }
-    }, [videoItems, isVideoActive, currentVideoIndex, currentSubIndex, preloadNextVideo, getVideoUrl, setupVideoProgressCheck]);
-
-    // ❌ NO hay handleMouseLeave - El video NUNCA se detiene por salida del mouse
-    // Solo se detiene si no es visible (IntersectionObserver) o si cambias de pestaña
-
-    // Evento 'ended' como respaldo
+    // Manejar visibilidad de la página
     useEffect(() => {
-        const videoElement = videoRefs.current[2];
-        if (!videoElement || videoItems.length === 0) return;
-        
-        const handleEnded = () => {
-            if (checkIntervalRef.current) {
-                clearInterval(checkIntervalRef.current);
-                checkIntervalRef.current = null;
-            }
-            playNextVideo();
-        };
-        
-        videoElement.addEventListener('ended', handleEnded);
-        return () => {
-            videoElement.removeEventListener('ended', handleEnded);
-            if (checkIntervalRef.current) {
-                clearInterval(checkIntervalRef.current);
-                checkIntervalRef.current = null;
+        const handleVisibilityChange = () => {
+            const videoElement = videoRef.current;
+            if (!videoElement || !isVideoReady) return;
+            
+            if (!document.hidden && isVideoVisible) {
+                videoElement.play().catch(() => {});
+            } else if (document.hidden) {
+                videoElement.pause();
             }
         };
-    }, [videoItems, playNextVideo]);
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [isVideoReady, isVideoVisible]);
+
+    // ✅ Hover - solo asegurar que el video sea visible
+    const handleMouseEnter = useCallback(() => {
+        const videoElement = videoRef.current;
+        if (videoElement && isVideoReady && videoUrl) {
+            videoElement.style.opacity = "1";
+            if (isVideoVisible && videoElement.paused) {
+                videoElement.play().catch(e => console.log("Error playing:", e));
+            }
+        }
+    }, [isVideoReady, videoUrl, isVideoVisible]);
 
     const createTween = useCallback(() => {
         const galleryElement = galleryRef.current;
@@ -341,16 +239,6 @@ function Galeria() {
     // Limpiar recursos
     useEffect(() => {
         return () => {
-            if (nextVideoRef.current) {
-                nextVideoRef.current.src = '';
-                nextVideoRef.current = null;
-            }
-            if (preloadTimeoutRef.current) {
-                clearTimeout(preloadTimeoutRef.current);
-            }
-            if (checkIntervalRef.current) {
-                clearInterval(checkIntervalRef.current);
-            }
             if (observerRef.current) {
                 observerRef.current.disconnect();
             }
@@ -379,6 +267,8 @@ function Galeria() {
         "4 / 2 / 5 / 3"
     ];
 
+    const hasVideo = videoUrl !== "";
+
     return (
         <>
             <div className="relative bg-black w-full h-screen inline-flex items-center justify-center overflow-hidden">
@@ -394,8 +284,7 @@ function Galeria() {
                     "
                 >
                     {fotoVideo.map((item, i) => {
-                        const hasVideo = item.video && 
-                            (Array.isArray(item.video) ? item.video.length > 0 : item.video !== "");
+                        const itemHasVideo = i === 2 && hasVideo;
                         
                         return (
                             <div
@@ -403,7 +292,6 @@ function Galeria() {
                                 className="gallery__item relative w-full h-full overflow-hidden group cursor-pointer"
                                 style={{ gridArea: gridAreas[i] }}
                                 onMouseEnter={() => i === 2 && handleMouseEnter()}
-                                // ❌ SIN onMouseLeave - el video NUNCA se detiene por salida del mouse
                             >
                                 <img
                                     src={item.foto}
@@ -413,20 +301,19 @@ function Galeria() {
 
                                 <div className="absolute inset-0 bg-black/40 rounded-lg transition-all duration-300 group-hover:bg-black/20" />
 
-                                {i === 2 && hasVideo && (
+                                {itemHasVideo && (
                                     <video
-                                        ref={(el) => {
-                                            if (el) videoRefs.current[i] = el;
-                                        }}
-                                        className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none opacity-0"
-                                        loop={false}
+                                        ref={videoRef}
+                                        className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none"
+                                        style={{ opacity: 0 }}
+                                        loop  // ✅ Bucle infinito activado
                                         muted
                                         playsInline
                                         preload="auto"
                                     />
                                 )}
 
-                                {i === 2 && hasVideo && (
+                                {itemHasVideo && (
                                     <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 z-10 opacity-70">
                                         <svg
                                             className="w-4 h-4 text-white"
@@ -442,7 +329,7 @@ function Galeria() {
                     })}
                 </div>
 
-                {/* 🔥 CONTENIDO - SIN eventos de hover */}
+                {/* 🔥 CONTENIDO */}
                 <div
                     ref={contentRef}
                     className="

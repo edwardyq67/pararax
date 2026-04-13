@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { motion } from "framer-motion";
+import { FluidEffect } from "@/components/Scene3D";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,13 +17,6 @@ const Counter = ({ targetValue, label, suffix = "", isVisible }) => {
   const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef(null);
   
-  useEffect(() => {
-    if (isVisible) {
-      setHasAnimated(false);
-      setCount(0);
-    }
-  }, [isVisible]);
-
   useEffect(() => {
     if (isVisible && !hasAnimated) {
       const duration = 2000;
@@ -239,69 +233,125 @@ function Movimiento() {
     section1: false,
     section2: false,
   });
+  
+  const [hasAnimated, setHasAnimated] = useState({
+    section1: false,
+    section2: false,
+  });
+  
+  const [isMobile, setIsMobile] = useState(false);
 
-  /* Intersection Observer */
+  /* Detectar si es móvil */
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  /* Intersection Observer para detectar visibilidad de secciones - SOLO UNA VEZ */
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.target === section1Ref.current)
-            setIsVisible((prev) => ({ ...prev, section1: entry.isIntersecting }));
-          if (entry.target === section2Ref.current)
-            setIsVisible((prev) => ({ ...prev, section2: entry.isIntersecting }));
+          if (entry.isIntersecting) {
+            if (entry.target === section1Ref.current && !hasAnimated.section1) {
+              setIsVisible((prev) => ({ ...prev, section1: true }));
+              setHasAnimated((prev) => ({ ...prev, section1: true }));
+              // Dejar de observar después de animar
+              observer.unobserve(entry.target);
+            }
+            if (entry.target === section2Ref.current && !hasAnimated.section2) {
+              setIsVisible((prev) => ({ ...prev, section2: true }));
+              setHasAnimated((prev) => ({ ...prev, section2: true }));
+              // Dejar de observar después de animar
+              observer.unobserve(entry.target);
+            }
+          }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2, once: true } // once: true es otra opción
     );
+    
     if (section1Ref.current) observer.observe(section1Ref.current);
     if (section2Ref.current) observer.observe(section2Ref.current);
+    
     return () => observer.disconnect();
+  }, [hasAnimated.section1, hasAnimated.section2]);
+
+  /* Animación del planeta con scroll */
+  useEffect(() => {
+    if (!containerRef.current || !planetContainerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
+      const mobile = window.innerWidth < 768;
+
+      gsap.to(planetContainerRef.current, {
+        x: mobile ? 0 : window.innerWidth * -0.25,
+        y: totalScroll * 1.02,
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
-
-/* Animación del planeta con scroll */
-useEffect(() => {
-  const ctx = gsap.context(() => {
-    const totalScroll = containerRef.current.offsetHeight - window.innerHeight;
-    const isMobile = window.innerWidth < 768;
-
-    gsap.to(planetContainerRef.current, {
-      x: isMobile ? 0 : window.innerWidth * -0.25, // ✅ Sin movimiento lateral en móvil
-      y: totalScroll * 1.02, // ✅ Más caída vertical en móvil
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1.5,
-        invalidateOnRefresh: true,
-      },
-    });
-  }, containerRef);
-
-  return () => ctx.revert();
-}, []);
 
   return (
     <div
       ref={containerRef}
-      className="relative  bg-black overflow-hidden"
+      className="relative bg-black h-[200vh] overflow-hidden"
     >
+      {/* FLUID EFFECT - Solo en desktop */}
+      {!isMobile && (
+        <div className="absolute inset-0 z-0 pointer-events-none" style={{ opacity: 0.4 }}>
+          <Canvas
+            camera={{ position: [0, 0, 5], fov: 75 }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+            }}
+            resize={{ scroll: false, offsetSize: true }}
+          >
+            <FluidEffect />
+          </Canvas>
+        </div>
+      )}
 
       {/* ESTRELLAS - Fondo fijo */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 6], fov: 60 }}>
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 60 }}
+          style={{ width: "100%", height: "100%" }}
+          resize={{ scroll: false, offsetSize: true }}
+        >
           <StarsBackground />
         </Canvas>
       </div>
 
-      {/* PLANETA - Ahora se mueve con scroll, no fixed */}
-      <div 
+      {/* PLANETA - Se mueve con scroll */}
+      <div
         ref={planetContainerRef}
-        className="absolute top-0 left-0 w-screen h-screen z-0 pointer-events-auto"
+        className="absolute top-0 left-0 w-screen h-screen z-20 pointer-events-auto"
         style={{ willChange: "transform" }}
       >
         <Canvas
           camera={{ position: [0, 0, 6], fov: 60 }}
           style={{ width: "100%", height: "100%" }}
+          resize={{ scroll: false, offsetSize: true }}
         >
           <ambientLight intensity={1.2} />
           <directionalLight position={[3, 3, 3]} intensity={2} />
@@ -309,7 +359,7 @@ useEffect(() => {
         </Canvas>
       </div>
 
-      {/* SECCIÓN 1 */}
+      {/* SECCIÓN 1 - Absolute - Primera pantalla - ANIMA SOLO UNA VEZ */}
       <motion.div
         ref={section1Ref}
         initial={{ opacity: 0, y: 100 }}
@@ -321,7 +371,7 @@ useEffect(() => {
           stiffness: 100,
           damping: 20,
         }}
-        className="h-[100dvh] flex items-center justify-center relative z-50 px-4 sm:px-6"
+        className="absolute top-0 left-0 w-full h-[100dvh] flex items-center justify-center z-30 px-4 sm:px-6"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -334,6 +384,7 @@ useEffect(() => {
             animate={isVisible.section1 ? { width: 80 } : { width: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full mx-auto mb-8"
+            style={{ height: 4 }}
           />
 
           <motion.h3
@@ -373,7 +424,7 @@ useEffect(() => {
         </motion.div>
       </motion.div>
 
-      {/* SECCIÓN 2 */}
+      {/* SECCIÓN 2 - Absolute - Segunda pantalla (abajo) - ANIMA SOLO UNA VEZ */}
       <motion.div
         ref={section2Ref}
         initial={{ opacity: 0, x: -50 }}
@@ -385,7 +436,7 @@ useEffect(() => {
           stiffness: 100,
           damping: 20,
         }}
-        className="h-[100dvh] flex items-end relative px-6 md:px-20 text-white pb-20"
+        className="absolute top-[100dvh] left-0 w-full h-[100dvh] flex items-end justify-center px-6 md:px-20 text-white pb-20 z-30"
       >
         <div className="grid md:grid-cols-2 gap-16 w-full max-w-7xl mx-auto">
           <motion.div

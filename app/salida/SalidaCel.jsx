@@ -9,7 +9,7 @@ function SalidaCel() {
       <div className="flex flex-col items-center justify-center relative">
 
         {/* TEXTO CON ESQUINAS */}
-        <div className="relative my-20 inline-block p-4 sm:p-6 md:p-8 lg:p-10 bg-white/5 backdrop-blur-md border border-white/20 rounded-xl max-w-[90vw] sm:max-w-[80vw] md:max-w-none">
+        <div className="relative my-10 md:my-36 inline-block p-4 sm:p-6 md:p-8 lg:p-10 bg-white/5 backdrop-blur-md border border-white/20 rounded-xl max-w-[90vw] sm:max-w-[80vw] md:max-w-none">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 relative z-10 text-center sm:text-left">
             Conoce nuestros Proyectos y Blog 👀
           </h2>

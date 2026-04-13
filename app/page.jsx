@@ -22,6 +22,7 @@ export default function Home() {
   const [permiso, setPermiso] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [videoListo, setVideoListo] = useState(false);
+  const [videoListoDos, setVideoListoDos] = useState(false);
   
   /* Detectar si es celular */
   useEffect(() => {
@@ -35,25 +36,26 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Cuando el video esté listo, cargar el contenido
+  // Cuando AMBOS videos estén listos, cargar el contenido
   useEffect(() => {
-    if (videoListo) {
+    if (videoListo && videoListoDos) {
       const timer = setTimeout(() => {
         setIsLoading(false);
       }, 500);
       
       return () => clearTimeout(timer);
     }
-  }, [videoListo]);
+  }, [videoListo, videoListoDos]);
 
   return (
     <>
-      {/* Loader - siempre visible hasta que se cumplan condiciones */}
+      {/* Loader - espera a que ambos videos estén listos */}
       {!permiso && (
         <Loader
           isLoading={isLoading}
           setPermiso={setPermiso}
           videoListo={videoListo}
+          videoListoDos={videoListoDos}  // ✅ Enviar videoListoDos al Loader
         />
       )}
 
@@ -76,15 +78,11 @@ export default function Home() {
           </section>
           
           <section id="galeria">
-            {isMobile ? <GaleriaCel /> : <Galeria />}
+            {isMobile ? <GaleriaCel setVideoListoDos={setVideoListoDos} /> : <Galeria setVideoListoDos={setVideoListoDos} />}
           </section>
 
           <section id="blog">
             <SalidaCel />
-          </section>
-
-          <section>
-            <Proyectos />
           </section>
 
           <section id="contacto">

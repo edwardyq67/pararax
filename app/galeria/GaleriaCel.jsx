@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState, useRef } from "react";
 
-function GaleriaCel() {
+function GaleriaCel({ setVideoListoDos }) {
   const [imagenes, setImagenes] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -16,6 +16,7 @@ function GaleriaCel() {
         const response = await fetch("/api/galeria/galeriaCel");
         const result = await response.json();
         
+        console.log("Datos cargados:", result);
         setImagenes(result.fotosCel || []);
         setEmpresas(result.textosCel || []);
         setLoading(false);
@@ -31,39 +32,37 @@ function GaleriaCel() {
   // Obtener la URL del video (el primer elemento del array o el string)
   const videoUrl = imagenes.length > 0 ? imagenes[0] : null;
 
-  // 🔥 IntersectionObserver para detectar cuando el video es visible
+  // Configurar el video cuando la URL está lista
   useEffect(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement || !videoUrl) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Video visible - reproducir
-            setIsVisible(true);
-            videoElement.play().catch(e => console.log("Error playing video:", e));
-          } else {
-            // Video no visible - pausar y reiniciar
-            setIsVisible(false);
-            videoElement.pause();
-            // Opcional: reiniciar el video cuando salga de vista
-            // videoElement.currentTime = 0;
-          }
-        });
-      },
-      {
-        threshold: 0.5, // 50% del video visible para activar
-        rootMargin: "0px 0px -100px 0px" // Margen negativo para activar un poco antes
-      }
-    );
-
-    observer.observe(videoElement);
-
-    return () => {
-      observer.unobserve(videoElement);
+    if (!videoUrl || !videoRef.current) return;
+    
+    const video = videoRef.current;
+    video.src = videoUrl;
+    video.load();
+    
+    const handleCanPlay = () => {
+      setIsVideoReady(true);
+      setVideoListoDos(true);
+      
+      // 🔥 Reproducir automáticamente cuando esté listo
+      video.play().catch(e => console.log("Error playing video:", e));
     };
-  }, [videoUrl]);
+    
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleCanPlay);
+    
+    // Si ya está cargado
+    if (video.readyState >= 3) {
+      handleCanPlay();
+    }
+    
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleCanPlay);
+    };
+  }, [videoUrl, setVideoListoDos]);
+
+  // 🔥 NO hay IntersectionObserver - el video siempre se reproduce
 
   // Limpiar video cuando el componente se desmonte
   useEffect(() => {
@@ -91,32 +90,21 @@ function GaleriaCel() {
       
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         
-        {/* Video responsivo */}
+        {/* Video responsivo con bucle automático - NUNCA SE DETIENE */}
         <div ref={containerRef} className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl mx-auto max-w-5xl">
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
             {videoUrl && (
               <video
                 ref={videoRef}
-                src={videoUrl}
                 className="w-full h-full object-cover"
-                loop
+                loop  // ✅ Bucle infinito activado
                 muted
                 playsInline
-                preload="none" // 🔥 No precargar el video hasta que sea necesario
+                preload="auto"
+                autoPlay  // ✅ Auto reproducción al cargar
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            
-            {/* Indicador de reproducción (opcional) */}
-            {!isVisible && videoUrl && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -138,7 +126,7 @@ function GaleriaCel() {
               {empresas.map((empresa, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 text-center hover:bg-white/20 transition-all duration-300 cursor-pointer"
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 text-center hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105"
                 >
                   <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto mb-2 sm:mb-3 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center">
                     <span className="text-white font-bold text-sm sm:text-base md:text-lg">
@@ -152,6 +140,13 @@ function GaleriaCel() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Mostrar mensaje si no hay empresas */}
+        {empresas.length === 0 && !loading && (
+          <div className="mt-12 text-center text-white/60">
+            <p>No hay empresas disponibles</p>
           </div>
         )}
 

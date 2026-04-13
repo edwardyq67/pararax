@@ -7,13 +7,16 @@
     "Lorem ipsum dolor sit ame"
   ],
   "fotosCel": [
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto1_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto2_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto3_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto4_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto5_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto6_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto7_sm.webp",
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/celular/Foto8_sm.webp"
+    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideoCentral_lg.mp4"
+  ],
+  "fotoVideo": [
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqArriba_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenArriba_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenCentro_lg.webp", "video": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideoCentral_lg.mp4" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerArriba_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqCen_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerAbajo_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqAbajo_lg.webp", "video": "" },
+    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenAbajo_lg.webp", "video": "" }
   ]
 }

@@ -1,7 +1,12 @@
 {
-  "/api/galeriaCel/route": "app/api/galeriaCel/route.js",
-  "/api/galeria/route": "app/api/galeria/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/api/galeria/galeriaEscritorio/route": "app/api/galeria/galeriaEscritorio/route.js",
+  "/api/galeriaSalida/route": "app/api/galeriaSalida/route.js",
+  "/api/inicio/celular/route": "app/api/inicio/celular/route.js",
+  "/api/carrusel/route": "app/api/carrusel/route.js",
+  "/api/galeria/galeriaCel/route": "app/api/galeria/galeriaCel/route.js",
+  "/api/inicio/escritorio/route": "app/api/inicio/escritorio/route.js",
+  "/api/proyectos/route": "app/api/proyectos/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
 }
