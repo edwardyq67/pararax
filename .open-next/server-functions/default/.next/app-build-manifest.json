@@ -12,15 +12,8 @@
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
       "static/chunks/255-2fe823c2b1ce4f82.js",
       "static/chunks/main-app-dd9f645922d00792.js",
-      "static/css/d77f5c31ac4826ac.css",
+      "static/css/4781ac03f89e3821.css",
       "static/chunks/app/layout-094303bade52bad1.js"
-    ],
-    "/api/galeria/galeriaEscritorio/route": [
-      "static/chunks/webpack-b90e25f78e2848ff.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-2fe823c2b1ce4f82.js",
-      "static/chunks/main-app-dd9f645922d00792.js",
-      "static/chunks/app/api/galeria/galeriaEscritorio/route-9b2b8cc34805d82a.js"
     ],
     "/api/galeriaSalida/route": [
       "static/chunks/webpack-b90e25f78e2848ff.js",
@@ -28,13 +21,6 @@
       "static/chunks/255-2fe823c2b1ce4f82.js",
       "static/chunks/main-app-dd9f645922d00792.js",
       "static/chunks/app/api/galeriaSalida/route-9b2b8cc34805d82a.js"
-    ],
-    "/api/inicio/celular/route": [
-      "static/chunks/webpack-b90e25f78e2848ff.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-2fe823c2b1ce4f82.js",
-      "static/chunks/main-app-dd9f645922d00792.js",
-      "static/chunks/app/api/inicio/celular/route-9b2b8cc34805d82a.js"
     ],
     "/api/carrusel/route": [
       "static/chunks/webpack-b90e25f78e2848ff.js",
@@ -49,6 +35,20 @@
       "static/chunks/255-2fe823c2b1ce4f82.js",
       "static/chunks/main-app-dd9f645922d00792.js",
       "static/chunks/app/api/galeria/galeriaCel/route-9b2b8cc34805d82a.js"
+    ],
+    "/api/inicio/celular/route": [
+      "static/chunks/webpack-b90e25f78e2848ff.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-2fe823c2b1ce4f82.js",
+      "static/chunks/main-app-dd9f645922d00792.js",
+      "static/chunks/app/api/inicio/celular/route-9b2b8cc34805d82a.js"
+    ],
+    "/api/galeria/galeriaEscritorio/route": [
+      "static/chunks/webpack-b90e25f78e2848ff.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-2fe823c2b1ce4f82.js",
+      "static/chunks/main-app-dd9f645922d00792.js",
+      "static/chunks/app/api/galeria/galeriaEscritorio/route-9b2b8cc34805d82a.js"
     ],
     "/api/inicio/escritorio/route": [
       "static/chunks/webpack-b90e25f78e2848ff.js",
@@ -78,7 +78,7 @@
       "static/chunks/c15bf2b0-f7282d455f9c4cd9.js",
       "static/chunks/51749ec1-fdaf35ee2339bbf5.js",
       "static/chunks/280-94d46809012fd768.js",
-      "static/chunks/app/page-093dead9d8faa1d6.js"
+      "static/chunks/app/page-e1cde0e854b70e55.js"
     ]
   }
 }

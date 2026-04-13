@@ -59,7 +59,7 @@ function Contacto() {
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-100px" }}
+          viewport={{ once: true, margin: "-100px" }}  // ✅ once: true
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative min-h-[100dvh] w-full rounded-t-lg 
           bg-gradient-to-b from-black from-[0%] via-black via-[50%] to-primary-600 
@@ -75,6 +75,7 @@ function Contacto() {
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}  // ✅ once: true
               transition={{ duration: 0.7 }}
               className="relative inline-block p-3 sm:p-5 md:p-6 lg:p-8 backdrop-blur-md rounded-xl w-full sm:w-auto mb-10"
             >
@@ -94,7 +95,7 @@ function Contacto() {
               variants={container}
               initial="hidden"
               whileInView="show"
-              viewport={{ once: false }}
+              viewport={{ once: true }}  // ✅ once: true
               className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 lg:p-10 w-full"
             >
 
