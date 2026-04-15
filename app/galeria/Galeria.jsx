@@ -52,31 +52,31 @@ function Galeria({ setVideoListoDos }) {
     // 🔥 Configurar video cuando la URL está lista
     useEffect(() => {
         if (!videoUrl || !videoRef.current) return;
-        
+
         const video = videoRef.current;
         video.src = videoUrl;
         video.load();
-        
+
         const handleCanPlay = () => {
             setIsVideoReady(true);
             setVideoListoDos(true); // ✅ Video listo para reproducirse
-            
+
             // Hacer visible el video y reproducir
             video.style.opacity = "1";
-            
+
             if (isVideoVisible) {
                 video.play().catch(e => console.log("Error playing video:", e));
             }
         };
-        
+
         video.addEventListener('canplay', handleCanPlay);
         video.addEventListener('loadeddata', handleCanPlay);
-        
+
         // Si ya está cargado
         if (video.readyState >= 3) {
             handleCanPlay();
         }
-        
+
         return () => {
             video.removeEventListener('canplay', handleCanPlay);
             video.removeEventListener('loadeddata', handleCanPlay);
@@ -124,14 +124,14 @@ function Galeria({ setVideoListoDos }) {
         const handleVisibilityChange = () => {
             const videoElement = videoRef.current;
             if (!videoElement || !isVideoReady) return;
-            
+
             if (!document.hidden && isVideoVisible) {
-                videoElement.play().catch(() => {});
+                videoElement.play().catch(() => { });
             } else if (document.hidden) {
                 videoElement.pause();
             }
         };
-        
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [isVideoReady, isVideoVisible]);
@@ -285,7 +285,7 @@ function Galeria({ setVideoListoDos }) {
                 >
                     {fotoVideo.map((item, i) => {
                         const itemHasVideo = i === 2 && hasVideo;
-                        
+
                         return (
                             <div
                                 key={i}
@@ -293,28 +293,32 @@ function Galeria({ setVideoListoDos }) {
                                 style={{ gridArea: gridAreas[i] }}
                                 onMouseEnter={() => i === 2 && handleMouseEnter()}
                             >
+                                {/* IMG */}
                                 <img
                                     src={item.foto}
                                     alt={`Galería ${i + 1}`}
-                                    className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-105"
+                                    className="w-full h-full object-cover rounded-lg transition-all duration-500"
                                 />
 
-                                <div className="absolute inset-0 bg-black/40 rounded-lg transition-all duration-300 group-hover:bg-black/20" />
+                                {/* 🔥 CAPA NEGRA GLOBAL (TODOS LOS ITEMS) */}
+                                <div className="absolute inset-0 bg-black/60 rounded-lg z-10" />
 
+                                {/* VIDEO (solo centro) */}
                                 {itemHasVideo && (
                                     <video
                                         ref={videoRef}
-                                        className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none"
+                                        className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300 pointer-events-none z-0"
                                         style={{ opacity: 0 }}
-                                        loop  // ✅ Bucle infinito activado
+                                        loop
                                         muted
                                         playsInline
                                         preload="auto"
                                     />
                                 )}
 
+                                {/* ICONO VIDEO */}
                                 {itemHasVideo && (
-                                    <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 z-10 opacity-70">
+                                    <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 z-20 opacity-70">
                                         <svg
                                             className="w-4 h-4 text-white"
                                             fill="currentColor"
@@ -334,70 +338,31 @@ function Galeria({ setVideoListoDos }) {
                     ref={contentRef}
                     className="
                         absolute bottom-0 left-0 w-full
-                        z-20 h-[150vh] 
+                        z-20 pb-96
                         px-4 md:px-10 py-10 md:py-20
                         translate-y-full
                         overflow-y-auto
                         pointer-events-auto
                     "
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-40 text-center text-white">
+                    <h2 className="text-4xl md:text-5xl font-bold pb-80 text-center text-white">
                         Empresas que confían en nosotros
                     </h2>
 
                     <div className="max-w-6xl mx-auto">
-                        <div className="justify-center text-center grid grid-cols-1 md:grid-cols-2">
-                            {(() => {
-                                const elementos = [];
-                                let dataIndex = 0;
-                                let position = 0;
-
-                                while (dataIndex < data.length) {
-                                    if (dataIndex < data.length) {
-                                        elementos.push(
-                                            <div
-                                                key={`item-${dataIndex}`}
-                                                className="flex justify-center mb-20"
-                                            >
-                                                <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                                    <div className="h-2 w-2 rounded-full bg-primary-500" />
-                                                    <span className="text-gray-800 font-medium">{data[dataIndex]}</span>
-                                                </span>
-                                            </div>
-                                        );
-                                        dataIndex++;
-                                        position++;
-                                    }
-
-                                    elementos.push(<div key={`empty-${position}-1`} className="mb-20"></div>);
-                                    elementos.push(<div key={`empty-${position}-2`} className="mb-20"></div>);
-                                    position += 2;
-
-                                    for (let i = 0; i < 2 && dataIndex < data.length; i++) {
-                                        elementos.push(
-                                            <div
-                                                key={`item-${dataIndex}`}
-                                                className="flex justify-center mb-20"
-                                            >
-                                                <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-auto shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                                                    <div className="h-2 w-2 rounded-full bg-primary-500" />
-                                                    <span className="text-gray-800 font-medium">{data[dataIndex]}</span>
-                                                </span>
-                                            </div>
-                                        );
-                                        dataIndex++;
-                                        position++;
-                                    }
-
-                                    if (dataIndex < data.length) {
-                                        elementos.push(<div key={`empty-${position}-1`} className="mb-20"></div>);
-                                        elementos.push(<div key={`empty-${position}-2`} className="mb-20"></div>);
-                                        position += 2;
-                                    }
-                                }
-
-                                return elementos;
-                            })()}
+                        <div className="grid grid-cols-1 gap-y-48 text-center">
+                            {data.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex w-full ${index % 2 === 0 ? "justify-start" : "justify-end"
+                                        }`}
+                                >
+                                    <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-60 shadow-lg  transition-all duration-300 ">
+                                        <div className="h-2 w-2 rounded-full bg-primary-500" />
+                                        <span className="text-gray-800 font-medium">{item}</span>
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

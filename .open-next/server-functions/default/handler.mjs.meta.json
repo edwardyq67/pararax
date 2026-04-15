@@ -3266,13 +3266,13 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js": {
-      "bytes": 6161,
+    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route_client-reference-manifest.js": {
+      "bytes": 6147,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route_client-reference-manifest.js": {
-      "bytes": 6147,
+    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js": {
+      "bytes": 6161,
       "imports": [],
       "format": "cjs"
     },
@@ -3335,14 +3335,14 @@
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\inicio\\escritorio\\route_client-reference-manifest.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeria\\galeriaEscritorio\\route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeria\\galeriaCel\\route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeria\\galeriaEscritorio\\route_client-reference-manifest.js"
         }
       ],
       "format": "cjs"
@@ -4092,72 +4092,6 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
-      "bytes": 22208,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
-          "kind": "require-call",
-          "original": "next/dist/shared/lib/router/utils/app-paths"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/dynamic-access-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/dynamic-access-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
-          "kind": "require-call",
-          "original": "next/dist/shared/lib/no-fallback-error.external"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/is-bot.js",
-          "kind": "require-call",
-          "original": "next/dist/shared/lib/router/utils/is-bot"
-        },
-        {
-          "path": "util",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/action-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
     ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js": {
       "bytes": 158207,
       "imports": [
@@ -4264,47 +4198,6 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/galeriaSalida/route.js": {
-      "bytes": 7965,
-      "imports": [
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
-          "kind": "require-call",
-          "original": "next/dist/shared/lib/router/utils/app-paths"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
-          "kind": "require-call",
-          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
-          "kind": "require-call",
-          "original": "next/dist/shared/lib/no-fallback-error.external"
-        },
-        {
-          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
-          "kind": "require-call",
-          "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
-          "kind": "require-call",
-          "original": "../../../webpack-runtime.js"
-        }
-      ],
-      "format": "cjs"
-    },
     ".open-next/server-functions/default/.next/server/app/api/carrusel/route.js": {
       "bytes": 7937,
       "imports": [
@@ -4346,8 +4239,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route.js": {
-      "bytes": 8588,
+    ".open-next/server-functions/default/.next/server/app/api/galeriaSalida/route.js": {
+      "bytes": 7965,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4382,13 +4275,79 @@
         {
           "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
           "kind": "require-call",
-          "original": "../../../../webpack-runtime.js"
+          "original": "../../../webpack-runtime.js"
         }
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js": {
-      "bytes": 7560,
+    ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
+      "bytes": 22208,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
+          "kind": "require-call",
+          "original": "next/dist/shared/lib/router/utils/app-paths"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/dynamic-access-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/dynamic-access-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
+          "kind": "require-call",
+          "original": "next/dist/shared/lib/no-fallback-error.external"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/is-bot.js",
+          "kind": "require-call",
+          "original": "next/dist/shared/lib/router/utils/is-bot"
+        },
+        {
+          "path": "util",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/action-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route.js": {
+      "bytes": 8486,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4429,7 +4388,48 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route.js": {
-      "bytes": 8636,
+      "bytes": 8534,
+      "imports": [
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
+          "kind": "require-call",
+          "original": "next/dist/shared/lib/router/utils/app-paths"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-page.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
+          "kind": "require-call",
+          "original": "next/dist/shared/lib/no-fallback-error.external"
+        },
+        {
+          "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/webpack-runtime.js",
+          "kind": "require-call",
+          "original": "../../../../webpack-runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js": {
+      "bytes": 7573,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4470,7 +4470,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/inicio/escritorio/route.js": {
-      "bytes": 7573,
+      "bytes": 7586,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4603,7 +4603,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/page.js": {
-      "bytes": 1368641,
+      "bytes": 1367025,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4737,9 +4737,9 @@
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\pages\\_document.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/_not-found/page.js",
+          "path": ".open-next/server-functions/default/.next/server/app/api/carrusel/route.js",
           "kind": "require-call",
-          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\_not-found\\page.js"
+          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\carrusel\\route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/galeriaSalida/route.js",
@@ -4747,9 +4747,9 @@
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeriaSalida\\route.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/carrusel/route.js",
+          "path": ".open-next/server-functions/default/.next/server/app/_not-found/page.js",
           "kind": "require-call",
-          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\carrusel\\route.js"
+          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\_not-found\\page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route.js",
@@ -4757,14 +4757,14 @@
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeria\\galeriaCel\\route.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js",
-          "kind": "require-call",
-          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\inicio\\celular\\route.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route.js",
           "kind": "require-call",
           "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\galeria\\galeriaEscritorio\\route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js",
+          "kind": "require-call",
+          "original": "D:\\Trabajo\\pararax\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\inicio\\celular\\route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/inicio/escritorio/route.js",
@@ -5957,16 +5957,6 @@
           "external": true
         },
         {
-          "path": "util",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
           "path": "url",
           "kind": "require-call",
           "external": true
@@ -5983,6 +5973,16 @@
         },
         {
           "path": "node:path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "path",
+          "kind": "require-call",
+          "external": true
+        },
+        {
+          "path": "util",
           "kind": "require-call",
           "external": true
         },
@@ -6804,11 +6804,11 @@
         ".open-next/server-functions/default/.next/server/app/api/inicio/escritorio/route_client-reference-manifest.js": {
           "bytesInOutput": 5705
         },
-        ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js": {
-          "bytesInOutput": 5729
-        },
         ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route_client-reference-manifest.js": {
           "bytesInOutput": 5708
+        },
+        ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route_client-reference-manifest.js": {
+          "bytesInOutput": 5729
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
           "bytesInOutput": 18931
@@ -6933,29 +6933,29 @@
         ".open-next/server-functions/default/node_modules/next/dist/server/app-render/dynamic-access-async-storage.external.js": {
           "bytesInOutput": 516
         },
-        ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
-          "bytesInOutput": 22465
-        },
         ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js": {
           "bytesInOutput": 167797
         },
-        ".open-next/server-functions/default/.next/server/app/api/galeriaSalida/route.js": {
-          "bytesInOutput": 8147
-        },
         ".open-next/server-functions/default/.next/server/app/api/carrusel/route.js": {
-          "bytesInOutput": 8115
+          "bytesInOutput": 8114
+        },
+        ".open-next/server-functions/default/.next/server/app/api/galeriaSalida/route.js": {
+          "bytesInOutput": 8148
+        },
+        ".open-next/server-functions/default/.next/server/app/_not-found/page.js": {
+          "bytesInOutput": 22465
         },
         ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaCel/route.js": {
-          "bytesInOutput": 8776
-        },
-        ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js": {
-          "bytesInOutput": 7744
+          "bytesInOutput": 8674
         },
         ".open-next/server-functions/default/.next/server/app/api/galeria/galeriaEscritorio/route.js": {
-          "bytesInOutput": 8831
+          "bytesInOutput": 8729
+        },
+        ".open-next/server-functions/default/.next/server/app/api/inicio/celular/route.js": {
+          "bytesInOutput": 7757
         },
         ".open-next/server-functions/default/.next/server/app/api/inicio/escritorio/route.js": {
-          "bytesInOutput": 7760
+          "bytesInOutput": 7773
         },
         ".open-next/server-functions/default/.next/server/app/api/proyectos/route.js": {
           "bytesInOutput": 8393
@@ -6964,7 +6964,7 @@
           "bytesInOutput": 118074
         },
         ".open-next/server-functions/default/.next/server/app/page.js": {
-          "bytesInOutput": 1536363
+          "bytesInOutput": 1534555
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
           "bytesInOutput": 14148
@@ -7081,7 +7081,7 @@
           "bytesInOutput": 56867
         }
       },
-      "bytes": 4240367
+      "bytes": 4238381
     }
   }
 }

@@ -9,13 +9,10 @@ function Paralax({ setVideoListo }) {
   
   const [isPageVisible, setIsPageVisible] = useState(true);
   const [isVideoVisible, setIsVideoVisible] = useState(true);
-  const [videos, setVideos] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [videoUrl, setVideoUrl] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
-  const nextVideoRef = useRef(null);
-  const preloadTimeoutRef = useRef(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const textos = [
     "SmartFrost ❄️",
@@ -24,66 +21,7 @@ function Paralax({ setVideoListo }) {
     "Eficiencia energética garantizada",
   ];
 
-  // 🔥 IntersectionObserver para detectar cuando el video es visible
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement || isLoading) return;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Video visible - reproducir si estaba pausado
-            setIsVideoVisible(true);
-            if (videoElement.paused && isPageVisible) {
-              videoElement.play().catch(e => console.log("Error resuming video:", e));
-            }
-          } else {
-            // Video no visible - pausar
-            setIsVideoVisible(false);
-            if (!videoElement.paused) {
-              videoElement.pause();
-            }
-          }
-        });
-      },
-      {
-        threshold: 0.1, // 10% visible para activar
-        rootMargin: "0px"
-      }
-    );
-
-    observerRef.current.observe(videoElement);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [isLoading, isPageVisible]);
-
-  // Cambio de texto simple
-  const changeText = useCallback((newText) => {
-    if (textRef.current) {
-      textRef.current.textContent = newText;
-    }
-  }, []);
-
-  // Auto-cambio de texto
-  useEffect(() => {
-    let index = 0;
-
-    const interval = setInterval(() => {
-      if (isPageVisible) {
-        index = (index + 1) % textos.length;
-        changeText(textos[index]);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isPageVisible, changeText, textos]);
-
-  // Detectar móvil al inicio
+  // Detectar móvil
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -95,88 +33,153 @@ function Paralax({ setVideoListo }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const preloadNextVideo = useCallback((currentIndex) => {
-    if (videos.length === 0) return;
-    const nextIndex = (currentIndex + 1) % videos.length;
-    const nextVideoUrl = videos[nextIndex].video;
-    if (preloadTimeoutRef.current) clearTimeout(preloadTimeoutRef.current);
-    preloadTimeoutRef.current = setTimeout(() => {
-      if (nextVideoRef.current) {
-        nextVideoRef.current.src = nextVideoUrl;
-        nextVideoRef.current.load();
-      } else {
-        const hiddenVideo = document.createElement('video');
-        hiddenVideo.preload = 'auto';
-        hiddenVideo.src = nextVideoUrl;
-        hiddenVideo.load();
-        nextVideoRef.current = hiddenVideo;
-      }
-    }, 100);
-  }, [videos]);
-
+  // Cargar el video según dispositivo
   useEffect(() => {
-    const checkDeviceAndLoadVideos = async () => {
+    const loadVideo = async () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       const endpoint = mobile ? '/api/inicio/celular' : '/api/inicio/escritorio';
+      
       try {
         const response = await fetch(endpoint, { cache: 'force-cache' });
         const data = await response.json();
-        setVideos(data);
+        console.log("Datos recibidos:", data);
+        
+        // ✅ CORREGIDO: data es un array directamente
+        let videoData = data;
+        
+        // Si es un array, tomar el primer elemento
+        if (Array.isArray(videoData) && videoData.length > 0) {
+          setVideoUrl(videoData[0].video);
+          console.log("Video URL:", videoData[0].video);
+        } 
+        // Si tiene estructura { escritorio: [], celular: [] }
+        else if (mobile && data.celular) {
+          setVideoUrl(data.celular[0]?.video);
+        } 
+        else if (!mobile && data.escritorio) {
+          setVideoUrl(data.escritorio[0]?.video);
+        }
+        
         setIsLoading(false);
       } catch (error) {
-        console.error("Error cargando videos:", error);
+        console.error("Error cargando video:", error);
         setIsLoading(false);
       }
     };
-    checkDeviceAndLoadVideos();
+    
+    loadVideo();
   }, []);
 
-  const playNextVideo = useCallback(() => {
-    if (videos.length === 0) return;
-    const nextIndex = (currentVideoIndex + 1) % videos.length;
-    if (nextVideoRef.current?.src) {
-      const tempSrc = nextVideoRef.current.src;
-      nextVideoRef.current.src = videoRef.current.src;
-      videoRef.current.src = tempSrc;
-      if (isVideoVisible && isPageVisible) {
-        videoRef.current.play().catch(e => console.log("Error playing:", e));
-      }
-      setCurrentVideoIndex(nextIndex);
-      preloadNextVideo(nextIndex);
-    } else {
-      setCurrentVideoIndex(nextIndex);
-      if (videoRef.current) {
-        videoRef.current.src = videos[nextIndex].video;
-        videoRef.current.load();
-        if (isVideoVisible && isPageVisible) {
-          videoRef.current.play().catch(e => console.log("Error playing:", e));
-        }
-      }
-      preloadNextVideo(nextIndex);
-    }
-  }, [currentVideoIndex, videos, preloadNextVideo, isVideoVisible, isPageVisible]);
-
+  // Configurar video cuando la URL está lista
   useEffect(() => {
+    if (!videoUrl || !videoRef.current) return;
+    
+    console.log("Configurando video con URL:", videoUrl);
+    
     const video = videoRef.current;
-    if (!video || videos.length === 0) return;
-    video.addEventListener('ended', playNextVideo);
-    return () => video.removeEventListener('ended', playNextVideo);
-  }, [videos, playNextVideo]);
-
-  useEffect(() => {
-    if (videos.length > 0 && videoRef.current) {
-      videoRef.current.src = videos[0].video;
-      videoRef.current.load();
-      preloadNextVideo(0);
+    video.src = videoUrl;
+    video.load();
+    
+    const handleCanPlay = () => {
+      console.log("✅ Video listo para reproducir");
+      setIsVideoReady(true);
+      setVideoListo(true);
+      
+      if (isVideoVisible && isPageVisible) {
+        video.play().catch(e => console.log("Error playing:", e));
+      }
+    };
+    
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleCanPlay);
+    
+    if (video.readyState >= 3) {
+      handleCanPlay();
     }
-  }, [videos, preloadNextVideo]);
+    
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleCanPlay);
+    };
+  }, [videoUrl, isVideoVisible, isPageVisible]);
 
+  // Asegurar que setVideoListo se llame incluso si hay error
+  useEffect(() => {
+    if (!isLoading && !videoUrl) {
+      setVideoListo(true);
+    }
+  }, [isLoading, videoUrl]);
+
+  // IntersectionObserver optimizado
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement || !isVideoReady) return;
+
+    let ticking = false;
+    
+    const handleIntersection = (entries) => {
+      if (ticking) return;
+      ticking = true;
+      
+      requestAnimationFrame(() => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVideoVisible(true);
+            if (videoElement.paused && isPageVisible) {
+              videoElement.play().catch(e => console.log("Error resuming:", e));
+            }
+          } else {
+            setIsVideoVisible(false);
+            if (!videoElement.paused) {
+              videoElement.pause();
+            }
+          }
+        });
+        ticking = false;
+      });
+    };
+
+    observerRef.current = new IntersectionObserver(handleIntersection, {
+      threshold: 0.1,
+      rootMargin: "50px"
+    });
+
+    observerRef.current.observe(videoElement);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [isVideoReady, isPageVisible]);
+
+  // Cambio de texto
+  const changeText = useCallback((newText) => {
+    if (textRef.current) {
+      textRef.current.textContent = newText;
+    }
+  }, []);
+
+  // Auto-cambio de texto
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (isPageVisible) {
+        index = (index + 1) % textos.length;
+        changeText(textos[index]);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isPageVisible, changeText]);
+
+  // Manejar visibilidad de la página
   useEffect(() => {
     const handleVisibilityChange = () => {
       const isVisible = !document.hidden;
       setIsPageVisible(isVisible);
-      if (videoRef.current) {
+      if (videoRef.current && isVideoReady) {
         if (isVisible && isVideoVisible) {
           videoRef.current.play().catch(() => {});
         } else if (!isVisible) {
@@ -184,35 +187,26 @@ function Paralax({ setVideoListo }) {
         }
       }
     };
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [isVideoVisible]);
+  }, [isVideoVisible, isVideoReady]);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || videos.length === 0) return;
-    const handleVideoReady = () => setVideoListo(true);
-    video.addEventListener('canplay', handleVideoReady);
-    video.addEventListener('loadeddata', handleVideoReady);
-    if (video.readyState >= 2) handleVideoReady();
-    return () => {
-      video.removeEventListener('canplay', handleVideoReady);
-      video.removeEventListener('loadeddata', handleVideoReady);
-    };
-  }, [videos, setVideoListo]);
-
+  // Limpieza
   useEffect(() => {
     return () => {
-      if (nextVideoRef.current) { nextVideoRef.current.src = ''; nextVideoRef.current = null; }
-      if (preloadTimeoutRef.current) clearTimeout(preloadTimeoutRef.current);
       if (observerRef.current) observerRef.current.disconnect();
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.src = "";
+      }
     };
   }, []);
 
   if (isLoading) {
     return (
       <div className="fixed top-0 left-0 w-full h-screen bg-black flex items-center justify-center z-10">
-        <div className="text-white">Cargando videos...</div>
+        <div className="text-white">Cargando video...</div>
       </div>
     );
   }
@@ -224,7 +218,7 @@ function Paralax({ setVideoListo }) {
           ref={videoRef}
           autoPlay
           muted
-          loop={false}
+          loop
           playsInline
           className="w-full h-full object-cover"
           preload="auto"

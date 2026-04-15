@@ -1,10 +1,10 @@
 {
-  "/_not-found/page": "/_not-found",
-  "/api/galeriaSalida/route": "/api/galeriaSalida",
   "/api/carrusel/route": "/api/carrusel",
+  "/api/galeriaSalida/route": "/api/galeriaSalida",
+  "/_not-found/page": "/_not-found",
   "/api/galeria/galeriaCel/route": "/api/galeria/galeriaCel",
-  "/api/inicio/celular/route": "/api/inicio/celular",
   "/api/galeria/galeriaEscritorio/route": "/api/galeria/galeriaEscritorio",
+  "/api/inicio/celular/route": "/api/inicio/celular",
   "/api/inicio/escritorio/route": "/api/inicio/escritorio",
   "/api/proyectos/route": "/api/proyectos",
   "/favicon.ico/route": "/favicon.ico",

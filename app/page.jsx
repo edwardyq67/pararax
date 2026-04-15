@@ -45,7 +45,8 @@ export default function Home() {
       
       return () => clearTimeout(timer);
     }
-  }, [videoListo, videoListoDos]);
+    console.log(videoListo)
+  }, [videoListo]);
 
   return (
     <>
