@@ -9,8 +9,6 @@ function Header() {
 
   const menu = [
     { name: "Productos", link: "#productos" },
-    { name: "Nosotros", link: "#nosotros" },
-    { name: "Galeria", link: "#galeria" },
     { name: "Blog", link: "#blog" },
   ]
 

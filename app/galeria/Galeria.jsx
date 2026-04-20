@@ -10,7 +10,7 @@ function Galeria({ setVideoListoDos }) {
     const galleryRef = useRef(null);
     const contentRef = useRef(null);
     const ctxRef = useRef(null);
-    const videoRef = useRef(null); // Solo un video reference
+    const videoRef = useRef(null);
     const observerRef = useRef(null);
 
     const [data, setData] = useState([]);
@@ -19,6 +19,10 @@ function Galeria({ setVideoListoDos }) {
     const [videoUrl, setVideoUrl] = useState("");
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isVideoVisible, setIsVideoVisible] = useState(false);
+    
+    // Nuevo estado para tracking de imágenes cargadas
+    const [imagenesCargadas, setImagenesCargadas] = useState(0);
+    const [totalImagenes, setTotalImagenes] = useState(0);
 
     // 🔥 FETCH DATA
     useEffect(() => {
@@ -38,6 +42,13 @@ function Galeria({ setVideoListoDos }) {
         getData();
     }, []);
 
+    // Contar total de imágenes cuando se cargan los datos
+    useEffect(() => {
+        if (fotoVideo.length > 0) {
+            setTotalImagenes(fotoVideo.length);
+        }
+    }, [fotoVideo]);
+
     // Obtener la URL del video del índice 2
     useEffect(() => {
         if (fotoVideo.length > 0 && fotoVideo[2]) {
@@ -49,6 +60,27 @@ function Galeria({ setVideoListoDos }) {
         }
     }, [fotoVideo]);
 
+    // ✅ Función para verificar si todo está listo y emitir true después de 500ms
+    const verificarTodoListo = useCallback(() => {
+        // Verificar que todas las imágenes estén cargadas
+        const todasImagenesListas = imagenesCargadas === totalImagenes && totalImagenes > 0;
+        
+        if (isVideoReady && todasImagenesListas) {
+            console.log("✅ Video e imágenes listos, esperando 500ms...");
+            const timer = setTimeout(() => {
+                console.log("✅ Enviando setVideoListoDos(true)");
+                setVideoListoDos(true);
+            }, 500);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [isVideoReady, imagenesCargadas, totalImagenes, setVideoListoDos]);
+
+    // Ejecutar verificación cuando cambien las dependencias
+    useEffect(() => {
+        verificarTodoListo();
+    }, [verificarTodoListo]);
+
     // 🔥 Configurar video cuando la URL está lista
     useEffect(() => {
         if (!videoUrl || !videoRef.current) return;
@@ -58,9 +90,9 @@ function Galeria({ setVideoListoDos }) {
         video.load();
 
         const handleCanPlay = () => {
+            console.log("✅ Video listo");
             setIsVideoReady(true);
-            setVideoListoDos(true); // ✅ Video listo para reproducirse
-
+            
             // Hacer visible el video y reproducir
             video.style.opacity = "1";
 
@@ -81,9 +113,71 @@ function Galeria({ setVideoListoDos }) {
             video.removeEventListener('canplay', handleCanPlay);
             video.removeEventListener('loadeddata', handleCanPlay);
         };
-    }, [videoUrl, setVideoListoDos, isVideoVisible]);
+    }, [videoUrl, isVideoVisible]);
 
-    // 🔥 IntersectionObserver para detectar visibilidad
+    // 🔥 Función para registrar imágenes cargadas
+    const registrarImagenCargada = useCallback(() => {
+        setImagenesCargadas(prev => {
+            const nueva = prev + 1;
+            console.log(`📷 Imagen cargada: ${nueva}/${totalImagenes}`);
+            return nueva;
+        });
+    }, [totalImagenes]);
+
+    // 🔥 Observer para detectar carga de imágenes
+    useEffect(() => {
+        if (loading || fotoVideo.length === 0) return;
+
+        // Reiniciar contador
+        setImagenesCargadas(0);
+        
+        // Buscar todas las imágenes en la galería
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.complete) {
+                        registrarImagenCargada();
+                        observer.unobserve(img);
+                    } else {
+                        img.addEventListener('load', () => {
+                            registrarImagenCargada();
+                            observer.unobserve(img);
+                        }, { once: true });
+                        img.addEventListener('error', () => {
+                            console.warn("Error cargando imagen");
+                            registrarImagenCargada(); // Contar aunque falle
+                            observer.unobserve(img);
+                        }, { once: true });
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // Esperar un momento para que el DOM se renderice
+        const timer = setTimeout(() => {
+            const galleryElement = galleryRef.current;
+            if (galleryElement) {
+                const images = galleryElement.querySelectorAll('img');
+                images.forEach(img => observer.observe(img));
+                
+                // También verificar imágenes ya cargadas
+                images.forEach(img => {
+                    if (img.complete) {
+                        registrarImagenCargada();
+                        observer.unobserve(img);
+                    }
+                });
+            }
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
+    }, [loading, fotoVideo, registrarImagenCargada]);
+
+    // 🔥 IntersectionObserver para detectar visibilidad del video
     useEffect(() => {
         const videoElement = videoRef.current;
         if (!videoElement || !isVideoReady) return;
@@ -136,7 +230,7 @@ function Galeria({ setVideoListoDos }) {
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [isVideoReady, isVideoVisible]);
 
-    // ✅ Hover - solo asegurar que el video sea visible
+    // ✅ Hover
     const handleMouseEnter = useCallback(() => {
         const videoElement = videoRef.current;
         if (videoElement && isVideoReady && videoUrl) {
@@ -298,12 +392,13 @@ function Galeria({ setVideoListoDos }) {
                                     src={item.foto}
                                     alt={`Galería ${i + 1}`}
                                     className="w-full h-full object-cover rounded-lg transition-all duration-500"
+                                    loading="eager"
                                 />
 
-                                {/* 🔥 CAPA NEGRA GLOBAL (TODOS LOS ITEMS) */}
+                                {/* CAPA NEGRA GLOBAL */}
                                 <div className="absolute inset-0 bg-black/60 rounded-lg z-10" />
 
-                                {/* VIDEO (solo centro) */}
+                                {/* VIDEO */}
                                 {itemHasVideo && (
                                     <video
                                         ref={videoRef}
@@ -333,7 +428,7 @@ function Galeria({ setVideoListoDos }) {
                     })}
                 </div>
 
-                {/* 🔥 CONTENIDO */}
+                {/* CONTENIDO */}
                 <div
                     ref={contentRef}
                     className="
@@ -357,7 +452,7 @@ function Galeria({ setVideoListoDos }) {
                                     className={`flex w-full ${index % 2 === 0 ? "justify-start" : "justify-end"
                                         }`}
                                 >
-                                    <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-60 shadow-lg  transition-all duration-300 ">
+                                    <span className="bg-white gap-2 rounded-lg py-3 px-4 inline-flex justify-center items-center w-60 shadow-lg transition-all duration-300">
                                         <div className="h-2 w-2 rounded-full bg-primary-500" />
                                         <span className="text-gray-800 font-medium">{item}</span>
                                     </span>

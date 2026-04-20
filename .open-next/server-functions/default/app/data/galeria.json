@@ -4,19 +4,37 @@
     "Medifarma S.A.",
     "Corporación Miski",
     "Laboratorios Portugal",
-    "Farmindustria Perú"
+    "Farmindustria Perú",
+    "Laboratorios AC Farma"
   ],
   "fotosCel": [
-    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideoCentral_lg.mp4"
+    "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideowebsfOptimizado.mp4"
   ],
   "fotoVideo": [
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqArriba_lg.webp" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenArriba_lg.webp" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenCentro_lg.webp", "video": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideowebsfOptimizado.mp4" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerArriba_lg.webp"},
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqCen_lg.webp" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerAbajo_lg.webp" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqAbajo_lg.webp" },
-    { "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenAbajo_lg.webp" }
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqArriba_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenArriba_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenCentro_lg.webp",
+      "video": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/video/VideowebsfOptimizado.mp4"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerArriba_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqCen_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoDerAbajo_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoIzqAbajo_lg.webp"
+    },
+    {
+      "foto": "https://pub-fb8ce31dbc6943a7b29fbbda76c4806f.r2.dev/galeria/fotos/FotoCenAbajo_lg.webp"
+    }
   ]
 }

@@ -74,10 +74,6 @@ export default function Home() {
             {isMobile ? <CarruselCel /> : <Carrusel />}
           </section>
           
-          <section id="nosotros">
-            <Movimiento />
-          </section>
-          
           <section id="galeria">
             {isMobile ? <GaleriaCel setVideoListoDos={setVideoListoDos} /> : <Galeria setVideoListoDos={setVideoListoDos} />}
           </section>
